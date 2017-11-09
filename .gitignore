@@ -262,3 +262,6 @@ __pycache__/
 
 # resx designer
 */i18n/*.Designer.*
+
+# vscode
+.vscode
