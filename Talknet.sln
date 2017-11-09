@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2002
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Talknet", "Talknet\Talknet.csproj", "{69C45531-B443-437D-AB92-2E130695C7A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestListener", "TestListener\TestListener.csproj", "{5896F504-0494-4C87-ADC7-E1D48999EA24}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tester", "Tester\Tester.csproj", "{E690EDF4-1171-446C-A980-67213E82154F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{69C45531-B443-437D-AB92-2E130695C7A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69C45531-B443-437D-AB92-2E130695C7A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69C45531-B443-437D-AB92-2E130695C7A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69C45531-B443-437D-AB92-2E130695C7A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5896F504-0494-4C87-ADC7-E1D48999EA24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5896F504-0494-4C87-ADC7-E1D48999EA24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5896F504-0494-4C87-ADC7-E1D48999EA24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E690EDF4-1171-446C-A980-67213E82154F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E690EDF4-1171-446C-A980-67213E82154F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E690EDF4-1171-446C-A980-67213E82154F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74F57516-3AC6-4539-BA11-1A4FA355881F}
+	EndGlobalSection
+EndGlobal
