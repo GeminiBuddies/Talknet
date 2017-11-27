@@ -20,7 +20,6 @@ using System.Text;
  */
 
 namespace Talknet {
-
     [Serializable]
     public class TalknetCommandException : Exception {
         // deleted

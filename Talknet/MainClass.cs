@@ -1,4 +1,9 @@
-﻿using System;
+﻿#if !COLORLESS
+#define COLORFUL
+#endif
+
+using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -18,6 +23,7 @@ using Talknet.i18n;
  * direct block | db
  */
 
+
 namespace Talknet {
     public static class MainClass {
         static readonly string ipPortPattern =
@@ -33,7 +39,21 @@ namespace Talknet {
         static string remote = "";
         static TalknetTcpClient client;
 
+#if COLORLESS
         static string getPrompt() => (connected ? remote : "offline") + "> ";
+        static void PrintPrompt() => Console.Write(getPrompt());
+
+        static void PrintErrMsgLine(string msg) => Console.WriteLine(msg);
+
+        static void PrintRemote(string msg) => Console.WriteLine(msg);
+#else
+        static string getPrompt() => (connected ? "@g" + remote + "@!" : "offline") + "> ";
+        static void PrintPrompt() => Exconsole.Write(getPrompt());
+
+        static void PrintErrMsgLine(string msg) => Exconsole.WriteLine("@r" + msg + "@!");
+
+        static void PrintRemote(string msg) => Exconsole.WriteLine("@y" + msg + "@!");
+#endif
 
         static void initialize() {
             refreshClient();
@@ -52,7 +72,7 @@ namespace Talknet {
                 .RegisterNew("exit", exit)
                 .RegisterNew("q", exit)
 #if DEBUG
-                .RegisterNew("generr", (any, thing) => { try { throw new Exception("efi kwo semé"); } catch(Exception ex) { throw new TalknetCommandException("um-cyroga", ex); } })
+                .RegisterNew("generr", (any, thing) => { try { throw new Exception("efi kwo semé"); } catch (Exception ex) { throw new TalknetCommandException("um-cyroga", ex); } })
                 .RegisterNew("genfatal", (any, thing) => throw new Exception("il-pavoka"))
 #endif
             ;
@@ -65,7 +85,7 @@ namespace Talknet {
 
             exiting = false;
             while (!exiting) {
-                Console.Write(getPrompt());
+                PrintPrompt();
 
                 var line = Console.ReadLine().Trim();
                 if (line.Length == 0) continue;
@@ -73,29 +93,31 @@ namespace Talknet {
                 try {
                     carl.InvokeFromLine(line);
                 } catch (CommandNotFoundException ex) {
-                    Console.WriteLine($"Unknown command {ex.Command}.");
+                    PrintErrMsgLine($"Unknown command {ex.Command}.");
                 } catch (CommandArgumentException ex) {
-                    Console.WriteLine($"{ex.Command}: {ex.Description}");
+                    PrintErrMsgLine($"{ex.Command}: {ex.Description}");
                 } catch (TalknetCommandException ex) {
-                    Console.WriteLine(string.Format(ErrMsg.CommandExceptionDesc, ex.Message));
-                    
+                    PrintErrMsgLine(string.Format(ErrMsg.CommandExceptionDesc, ex.Message));
+
                     if (ex.InnerException == null) {
-                        Console.WriteLine(ErrMsg.NoInnerException);
+                        PrintErrMsgLine(ErrMsg.NoInnerException);
                     } else {
-                        Console.WriteLine(string.Format(ErrMsg.InnerExceptionDesc, ex.InnerException.GetType().FullName, ex.InnerException.Message));
-                        Console.WriteLine(ErrMsg.ExceptionStacktrace);
-                        Console.WriteLine(ex.InnerException.StackTrace);
+                        PrintErrMsgLine(string.Format(ErrMsg.InnerExceptionDesc, ex.InnerException.GetType().FullName, ex.InnerException.Message));
+                        PrintErrMsgLine(ErrMsg.ExceptionStacktrace);
+                        PrintErrMsgLine(ex.InnerException.StackTrace);
                     }
-                } catch(Exception ex) {
-                    Console.WriteLine(ErrMsg.FatalException);
-                    Console.WriteLine(string.Format(ErrMsg.ExceptionDesc, ex.GetType().FullName, ex.Message));
-                    Console.WriteLine(ErrMsg.ExceptionStacktrace);
-                    Console.WriteLine(ex.StackTrace);
+                } catch (Exception ex) {
+                    PrintErrMsgLine(ErrMsg.FatalException);
+                    PrintErrMsgLine(string.Format(ErrMsg.ExceptionDesc, ex.GetType().FullName, ex.Message));
+                    PrintErrMsgLine(ErrMsg.ExceptionStacktrace);
+                    PrintErrMsgLine(ex.StackTrace);
 
                     exiting = true;
                     break;
                 }
             }
+
+            if (connected) Disconnect();
         }
 
         // Command handlers
@@ -124,7 +146,7 @@ namespace Talknet {
 
         private static int disconnect(string command, string[] args) {
             if (args.Length != 0) throw new CommandArgumentException(command, "No argument expected.");
-            
+
             Disconnect();
             return 0;
         }
@@ -171,7 +193,7 @@ namespace Talknet {
 
         private static void refreshClient() {
             client = new TalknetTcpClient();
-            client.OnData += (sender, e) => { Console.WriteLine(client.ReadAllAsString()); };
+            client.OnData += (sender, e) => { PrintRemote(client.ReadAllAsString()); };
         }
 
         public static int Send(string cont) {
