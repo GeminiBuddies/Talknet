@@ -260,10 +260,17 @@ paket-files/
 __pycache__/
 *.pyc
 
+#### U win MS
+#### will be removed after I know how to generate it automatically
 # resx designer
-*/i18n/*.Designer.*
+# */i18n/*.Designer.*
+####
 
 # vscode
 .vscode/
 
+# publish profiles
 [Pp]ublish[Pp]rofiles/
+
+# vim
+*.swp
