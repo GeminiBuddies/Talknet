@@ -8,7 +8,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 using Talknet.i18n;
+using Talknet.Plugin;
 
 /*
  * Prompt :
@@ -26,13 +28,18 @@ using Talknet.i18n;
 
 namespace Talknet {
     public static class MainClass {
-        static readonly string ipPortPattern =
-            @"\A(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])" +
-            @"\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])" +
-            @"\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])" +
-            @"\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])" +
-            @":(\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d\d|655[0-2]\d|6553[0-5])" +
-            @"\z";
+        internal static bool isValidInt(string v, out int x) {
+            x = 0;
+            if (int.TryParse(v, out int y)) {
+                if (y != 0 && v[0] == '0') return false;
+                x = y;
+                return true;
+            }
+
+            return false;
+        }
+
+        static readonly string ipPortPattern = @"\A(?<ip>(?<ipa>\d{1,3})\.(?<ipb>\d{1,3})\.(?<ipc>\d{1,3})\.(?<ipd>\d{1,3})):(?<port>\d{1,5})\z";
         static readonly Regex ipPortRegex = new Regex(ipPortPattern);
 
         static bool connected { get => client?.Connected ?? false; }
@@ -76,6 +83,8 @@ namespace Talknet {
                 .RegisterNew("genfatal", (any, thing) => throw new Exception("il-pavoka"))
 #endif
             ;
+
+            PluginManager.SelfLoad();
         }
 
         static bool exiting;
@@ -93,7 +102,7 @@ namespace Talknet {
                 try {
                     carl.InvokeFromLine(line);
                 } catch (CommandNotFoundException ex) {
-                    PrintErrMsgLine($"Unknown command {ex.Command}.");
+                    PrintErrMsgLine(string.Format(ErrMsg.UnknownCommand, ex.Command));
                 } catch (CommandArgumentException ex) {
                     PrintErrMsgLine($"{ex.Command}: {ex.Description}");
                 } catch (TalknetCommandException ex) {
@@ -133,13 +142,26 @@ namespace Talknet {
 
             string addr = args[0];
             var matches = ipPortRegex.Matches(addr);
-            if (matches.Count != 1) throw new CommandArgumentException(command, $"Invalid address: \"{addr}\".");
-            var match = matches[0];
+            Match match = null;
+            bool valid = false;
+            int port; string ip;
 
-            string ip = $"{match.Groups[1].Value}.{match.Groups[2].Value}.{match.Groups[3].Value}.{match.Groups[4].Value}";
-            int port = int.Parse(match.Groups[5].Value);
+            if (matches.Count == 1) {
+                match = matches[0];
 
-            remote = $"{ip}:{port}";
+                if (new string[] { "ipa", "ipb", "ipc", "ipd" }.All(str => isValidInt(match.Groups[str].Value, out int x) && x >= 0 && x <= 255)) {
+                    if (isValidInt(match.Groups["port"].Value, out port) && port > 0 && port < 65536) {
+                        valid = true;
+                    }
+                }
+            }
+
+            if (!valid) throw new CommandArgumentException(command, $"Invalid address: \"{addr}\".");
+
+             ip = match.Groups["ip"].Value;
+             port = int.Parse(match.Groups["port"].Value);
+
+            remote = match.Value;
 
             return Connect(new IPEndPoint(IPAddress.Parse(ip), port));
         }

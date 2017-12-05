@@ -194,5 +194,24 @@ namespace Talknet.i18n {
                 return ResourceManager.GetString("NotConnected", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找类似 Plugin assembly gives an invalid plugin list.
+        ///Plugin assembly: {0}, invalid item: {1}. 的本地化字符串。
+        /// </summary>
+        internal static string PluginAssemblyInvalidPluginList {
+            get {
+                return ResourceManager.GetString("PluginAssemblyInvalidPluginList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Unknown command: {0} 的本地化字符串。
+        /// </summary>
+        internal static string UnknownCommand {
+            get {
+                return ResourceManager.GetString("UnknownCommand", resourceCulture);
+            }
+        }
     }
 }

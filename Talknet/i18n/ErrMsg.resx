@@ -162,4 +162,11 @@
   <data name="NotConnected" xml:space="preserve">
     <value>Not connected yet.</value>
   </data>
+  <data name="PluginAssemblyInvalidPluginList" xml:space="preserve">
+    <value>Plugin assembly gives an invalid plugin list.
+Plugin assembly: {0}, invalid item: {1}.</value>
+  </data>
+  <data name="UnknownCommand" xml:space="preserve">
+    <value>Unknown command: {0}</value>
+  </data>
 </root>
