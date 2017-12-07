@@ -106,6 +106,15 @@ namespace Talknet.i18n {
         }
         
         /// <summary>
+        ///   查找类似 Exact {0} argument(s) expected. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedArgCountEq {
+            get {
+                return ResourceManager.GetString("ExpectedArgCountEq", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 At least {0} argument(s) expected. 的本地化字符串。
         /// </summary>
         internal static string ExpectedArgCountGe {
@@ -196,12 +205,59 @@ namespace Talknet.i18n {
         }
         
         /// <summary>
-        ///   查找类似 Plugin assembly gives an invalid plugin list.
-        ///Plugin assembly: {0}, invalid item: {1}. 的本地化字符串。
+        ///   查找类似 A plugin assembly gives no plugin list.
+        ///Plugin assembly: {0}. 的本地化字符串。
         /// </summary>
-        internal static string PluginAssemblyInvalidPluginList {
+        internal static string PluginAssemblyNoPluginList {
             get {
-                return ResourceManager.GetString("PluginAssemblyInvalidPluginList", resourceCulture);
+                return ResourceManager.GetString("PluginAssemblyNoPluginList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Plugin has an invalid name. 的本地化字符串。
+        /// </summary>
+        internal static string PluginItemInvalidName {
+            get {
+                return ResourceManager.GetString("PluginItemInvalidName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Plugin classes must have Attribute TalknetPluginAttribute. 的本地化字符串。
+        /// </summary>
+        internal static string PluginItemNoAttribute {
+            get {
+                return ResourceManager.GetString("PluginItemNoAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Plugin classes must implement Interface ITalknetPlugin 的本地化字符串。
+        /// </summary>
+        internal static string PluginItemNoInterface {
+            get {
+                return ResourceManager.GetString("PluginItemNoInterface", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 A null item. 的本地化字符串。
+        /// </summary>
+        internal static string PluginItemNull {
+            get {
+                return ResourceManager.GetString("PluginItemNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 A plugin assembly gives a plugin list with an invalid item.
+        ///Plugin assembly: {0}, invalid item: {1}.
+        ///Info: {2}. 的本地化字符串。
+        /// </summary>
+        internal static string PluginListInvalidItem {
+            get {
+                return ResourceManager.GetString("PluginListInvalidItem", resourceCulture);
             }
         }
         

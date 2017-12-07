@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Talknet.i18n;
 
 namespace Talknet {
     internal static class Ext {
@@ -43,7 +40,7 @@ namespace Talknet {
 
     public delegate T CommandHandler<T>(string cmd, string[] param);
     internal class CommandInvoker<T> {
-        Dictionary<string, CommandHandler<T>> handlers;
+        readonly Dictionary<string, CommandHandler<T>> handlers;
         CommandHandler<T> defaultHandler = null;
 
         public CommandInvoker() {

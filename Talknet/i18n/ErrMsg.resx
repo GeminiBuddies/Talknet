@@ -132,6 +132,9 @@
   <data name="ExceptionStacktrace" xml:space="preserve">
     <value>Stactrace:</value>
   </data>
+  <data name="ExpectedArgCountEq" xml:space="preserve">
+    <value>Exact {0} argument(s) expected.</value>
+  </data>
   <data name="ExpectedArgCountGe" xml:space="preserve">
     <value>At least {0} argument(s) expected.</value>
   </data>
@@ -162,9 +165,26 @@
   <data name="NotConnected" xml:space="preserve">
     <value>Not connected yet.</value>
   </data>
-  <data name="PluginAssemblyInvalidPluginList" xml:space="preserve">
-    <value>Plugin assembly gives an invalid plugin list.
-Plugin assembly: {0}, invalid item: {1}.</value>
+  <data name="PluginAssemblyNoPluginList" xml:space="preserve">
+    <value>A plugin assembly gives no plugin list.
+Plugin assembly: {0}.</value>
+  </data>
+  <data name="PluginItemInvalidName" xml:space="preserve">
+    <value>Plugin has an invalid name.</value>
+  </data>
+  <data name="PluginItemNoAttribute" xml:space="preserve">
+    <value>Plugin classes must have Attribute TalknetPluginAttribute.</value>
+  </data>
+  <data name="PluginItemNoInterface" xml:space="preserve">
+    <value>Plugin classes must implement Interface ITalknetPlugin</value>
+  </data>
+  <data name="PluginItemNull" xml:space="preserve">
+    <value>A null item.</value>
+  </data>
+  <data name="PluginListInvalidItem" xml:space="preserve">
+    <value>A plugin assembly gives a plugin list with an invalid item.
+Plugin assembly: {0}, invalid item: {1}.
+Info: {2}.</value>
   </data>
   <data name="UnknownCommand" xml:space="preserve">
     <value>Unknown command: {0}</value>

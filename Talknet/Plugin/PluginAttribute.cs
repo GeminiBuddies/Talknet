@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Talknet.Plugin {
     public struct TalknetPluginInfo {
@@ -12,18 +10,22 @@ namespace Talknet.Plugin {
         public override string ToString() => $"{DisplayName} - {Ver} - {Author}";
     }
 
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public sealed class TalknetPluginAttribute : Attribute {
-        internal TalknetPluginInfo Info { private set; get; }
+        internal TalknetPluginInfo Info { get; }
 
-        public TalknetPluginAttribute(string Name, string DisplayName, string VersionString, string Author) {
-            Info = new TalknetPluginInfo { Name = Name, DisplayName = DisplayName, Ver = new Version(VersionString), Author = Author };
+        public TalknetPluginAttribute(string name, string displayName, string versionString, string author) {
+            Info = new TalknetPluginInfo { Name = name, DisplayName = displayName, Ver = new Version(versionString), Author = author };
+        }
+
+        public TalknetPluginAttribute(TalknetPluginInfo info) {
+            Info = info;
         }
     }
 
-    [AttributeUsage(AttributeTargets.Assembly, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Assembly)]
     public sealed class TalknetPluginAssemblyAttribute: Attribute {
-        public Type[] Plugins { private set; get; }
+        public Type[] Plugins { get; }
         public TalknetPluginAssemblyAttribute(params Type[] plugins) { Plugins = plugins; }
     }
 }

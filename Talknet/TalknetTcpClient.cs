@@ -18,7 +18,7 @@ namespace Talknet {
         List<byte> recvCache = null;
 
         // properties
-        public Encoding DefaultEncoding { get; set; } = Consts.defaultEncoding;
+        public Encoding DefaultEncoding { get; set; } = Consts.DefaultEncoding;
         public bool Connected { get => client != null; }
         public int BytesAvailable { get => Connected ? client.Client.Available : throw new InvalidOperationException(ErrMsg.NotConnected); }
 
@@ -59,10 +59,10 @@ namespace Talknet {
         bool receiving = false;
         protected virtual void receiver() {
             recvCache = new List<byte>();
-            while (!receiving) Thread.Sleep(Consts.checkIntervalMilli);
+            while (!receiving) Thread.Sleep(Consts.CheckIntervalMilli);
 
             while (receiving) {
-                if (client.Available == 0) { Thread.Sleep(Consts.checkIntervalMilli); continue; }
+                if (client.Available == 0) { Thread.Sleep(Consts.CheckIntervalMilli); continue; }
 
                 bool invoking = recvCache.Count == 0;
 

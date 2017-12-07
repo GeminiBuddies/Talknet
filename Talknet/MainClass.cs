@@ -3,9 +3,7 @@
 #endif
 
 using System;
-using System.Diagnostics;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
@@ -48,18 +46,18 @@ namespace Talknet {
 
 #if COLORLESS
         static string getPrompt() => (connected ? remote : "offline") + "> ";
-        static void PrintPrompt() => Console.Write(getPrompt());
+        static void printPrompt() => Console.Write(getPrompt());
 
-        static void PrintErrMsgLine(string msg) => Console.WriteLine(msg);
+        static void printErrMsgLine(string msg) => Console.WriteLine(msg);
 
-        static void PrintRemote(string msg) => Console.WriteLine(msg);
+        static void printRemote(string msg) => Console.WriteLine(msg);
 #else
         static string getPrompt() => (connected ? "@g" + remote + "@!" : "offline") + "> ";
-        static void PrintPrompt() => Exconsole.Write(getPrompt());
+        static void printPrompt() => Exconsole.Write(getPrompt());
 
-        static void PrintErrMsgLine(string msg) => Exconsole.WriteLine("@r" + msg + "@!");
+        static void printErrMsgLine(string msg) => Exconsole.WriteLine("@r" + msg + "@!");
 
-        static void PrintRemote(string msg) => Exconsole.WriteLine("@y" + msg + "@!");
+        static void printRemote(string msg) => Exconsole.WriteLine("@y" + msg + "@!");
 #endif
 
         static void initialize() {
@@ -84,7 +82,8 @@ namespace Talknet {
 #endif
             ;
 
-            PluginManager.SelfLoad();
+            PluginManager.InitializeManager();
+            PluginManager.LoadAndInitializePlugins();
         }
 
         static bool exiting;
@@ -94,7 +93,7 @@ namespace Talknet {
 
             exiting = false;
             while (!exiting) {
-                PrintPrompt();
+                printPrompt();
 
                 var line = Console.ReadLine().Trim();
                 if (line.Length == 0) continue;
@@ -102,24 +101,24 @@ namespace Talknet {
                 try {
                     carl.InvokeFromLine(line);
                 } catch (CommandNotFoundException ex) {
-                    PrintErrMsgLine(string.Format(ErrMsg.UnknownCommand, ex.Command));
+                    printErrMsgLine(string.Format(ErrMsg.UnknownCommand, ex.Command));
                 } catch (CommandArgumentException ex) {
-                    PrintErrMsgLine($"{ex.Command}: {ex.Description}");
+                    printErrMsgLine($"{ex.Command}: {ex.Description}");
                 } catch (TalknetCommandException ex) {
-                    PrintErrMsgLine(string.Format(ErrMsg.CommandExceptionDesc, ex.Message));
+                    printErrMsgLine(string.Format(ErrMsg.CommandExceptionDesc, ex.Message));
 
                     if (ex.InnerException == null) {
-                        PrintErrMsgLine(ErrMsg.NoInnerException);
+                        printErrMsgLine(ErrMsg.NoInnerException);
                     } else {
-                        PrintErrMsgLine(string.Format(ErrMsg.InnerExceptionDesc, ex.InnerException.GetType().FullName, ex.InnerException.Message));
-                        PrintErrMsgLine(ErrMsg.ExceptionStacktrace);
-                        PrintErrMsgLine(ex.InnerException.StackTrace);
+                        printErrMsgLine(string.Format(ErrMsg.InnerExceptionDesc, ex.InnerException.GetType().FullName, ex.InnerException.Message));
+                        printErrMsgLine(ErrMsg.ExceptionStacktrace);
+                        printErrMsgLine(ex.InnerException.StackTrace);
                     }
                 } catch (Exception ex) {
-                    PrintErrMsgLine(ErrMsg.FatalException);
-                    PrintErrMsgLine(string.Format(ErrMsg.ExceptionDesc, ex.GetType().FullName, ex.Message));
-                    PrintErrMsgLine(ErrMsg.ExceptionStacktrace);
-                    PrintErrMsgLine(ex.StackTrace);
+                    printErrMsgLine(ErrMsg.FatalException);
+                    printErrMsgLine(string.Format(ErrMsg.ExceptionDesc, ex.GetType().FullName, ex.Message));
+                    printErrMsgLine(ErrMsg.ExceptionStacktrace);
+                    printErrMsgLine(ex.StackTrace);
 
                     exiting = true;
                     break;
@@ -149,7 +148,7 @@ namespace Talknet {
             if (matches.Count == 1) {
                 match = matches[0];
 
-                if (new string[] { "ipa", "ipb", "ipc", "ipd" }.All(str => isValidInt(match.Groups[str].Value, out int x) && x >= 0 && x <= 255)) {
+                if (new[] { "ipa", "ipb", "ipc", "ipd" }.All(str => isValidInt(match.Groups[str].Value, out int x) && x >= 0 && x <= 255)) {
                     if (isValidInt(match.Groups["port"].Value, out port) && port > 0 && port < 65536) {
                         valid = true;
                     }
@@ -174,14 +173,14 @@ namespace Talknet {
         }
 
         private static int send(string command, string[] args) {
-            if (args.Length == 0) throw new CommandArgumentException(command, "At least 1 argument expected.");
+            if (args.Length == 0) throw new CommandArgumentException(command, string.Format(ErrMsg.ExpectedArgCountGe, 1));
 
             foreach (var i in args) Send(i);
             return 0;
         }
 
         private static int direct(string command, string[] args) {
-            if (args.Length != 1) throw new CommandArgumentException(command, "Expected exact 1 argument.");
+            if (args.Length != 1) throw new CommandArgumentException(command, string.Format(ErrMsg.ExpectedArgCountEq, 1));
 
             if (args[0] == "line") return DirectMode(false);
             else if (args[0] == "block") return DirectMode(true);
@@ -199,14 +198,14 @@ namespace Talknet {
         }
 
         public static int Connect(IPEndPoint addr) {
-            if (connected) throw new InvalidOperationException("Already connected.");
+            if (connected) throw new InvalidOperationException(ErrMsg.AlreadyConnected);
 
             client.Connect(addr);
             return 0;
         }
 
         public static int Disconnect() {
-            if (!connected) throw new InvalidOperationException("Not connected yet.");
+            if (!connected) throw new InvalidOperationException(ErrMsg.NotConnected);
 
             client.Disconnect();
             refreshClient();
@@ -215,20 +214,20 @@ namespace Talknet {
 
         private static void refreshClient() {
             client = new TalknetTcpClient();
-            client.OnData += (sender, e) => { PrintRemote(client.ReadAllAsString()); };
+            client.OnData += (sender, e) => { printRemote(client.ReadAllAsString()); };
         }
 
         public static int Send(string cont) {
-            if (!connected) throw new InvalidOperationException("Not connected yet.");
+            if (!connected) throw new InvalidOperationException(ErrMsg.NotConnected);
 
             client.Send(cont);
             return 0;
         }
 
         public static int DirectMode(bool blockMode) {
-            if (!connected) throw new InvalidOperationException("Not connected yet.");
+            if (!connected) throw new InvalidOperationException(ErrMsg.NotConnected);
 
-            string nl = System.Environment.NewLine;
+            string nl = Environment.NewLine;
             bool removeReturn = nl.Length == 2, replaceReturn = nl == "\r";
             StringBuilder sb = new StringBuilder();
 

@@ -28,7 +28,7 @@ namespace Talknet {
         //   - : undo all color setting
         // "@@" means output @, and "##" means output #
         // Invalid "@x" and "#x" will be outputted as is
-        internal static readonly Dictionary<char, ConsoleColor> colorDict = new Dictionary<char, ConsoleColor> {
+        internal static readonly Dictionary<char, ConsoleColor> ColorDict = new Dictionary<char, ConsoleColor> {
             ['r'] = ConsoleColor.Red, ['R'] = ConsoleColor.DarkRed,
             ['g'] = ConsoleColor.Green, ['G'] = ConsoleColor.DarkGreen,
             ['b'] = ConsoleColor.Blue, ['B'] = ConsoleColor.DarkBlue,
@@ -62,8 +62,8 @@ namespace Talknet {
                         var targetStack = fore ? foreColorStack : backColorStack;
                         var targetDefault = fore ? defaultForeColor : defaultBackColor;
 
-                        if (colorDict.ContainsKey(nxt)) {
-                            var newColor = colorDict[nxt];
+                        if (ColorDict.ContainsKey(nxt)) {
+                            var newColor = ColorDict[nxt];
 
                             targetStack.Push(newColor);
                             if (fore) Console.ForegroundColor = newColor;
