@@ -157,8 +157,8 @@ namespace Talknet {
 
             if (!valid) throw new CommandArgumentException(command, $"Invalid address: \"{addr}\".");
 
-             ip = match.Groups["ip"].Value;
-             port = int.Parse(match.Groups["port"].Value);
+            ip = match.Groups["ip"].Value;
+            port = int.Parse(match.Groups["port"].Value);
 
             remote = match.Value;
 
