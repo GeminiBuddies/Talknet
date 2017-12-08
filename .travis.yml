@@ -5,3 +5,4 @@ dist: xenial
 script:
  - dotnet restore
  - dotnet build
+
