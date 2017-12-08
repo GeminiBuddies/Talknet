@@ -3,21 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Talknet {
-    internal static class Ext {
-        internal static IEnumerable<T> Take<T>(this IEnumerable<T> src, int from, int count) {
-            var en = src.GetEnumerator();
-
-            for (int i = 0; i < from; ++i) {
-                if (!en.MoveNext()) yield break;
-            }
-
-            for (int i = 0; i < count; ++i) {
-                if (!en.MoveNext()) yield break;
-                yield return en.Current;
-            }
-        }
-    }
-
     internal class CommandNotFoundException : Exception {
         public string Command { get; private set; }
 
@@ -38,7 +23,9 @@ namespace Talknet {
         }
     }
 
+    [Obsolete]
     public delegate T CommandHandler<T>(string cmd, string[] param);
+    [Obsolete]
     internal class CommandInvoker<T> {
         readonly Dictionary<string, CommandHandler<T>> handlers;
         CommandHandler<T> defaultHandler = null;
