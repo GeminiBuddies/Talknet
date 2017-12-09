@@ -1,4 +1,4 @@
-﻿// this class is frozen
+// this class is frozen
 // multi-connection won't be implemented until I finish the (prototype of) plugin system.
 
 /*

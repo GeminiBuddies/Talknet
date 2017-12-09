@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Talknet.i18n;
 
 namespace Talknet.Plugin {

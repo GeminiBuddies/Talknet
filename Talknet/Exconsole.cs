@@ -1,4 +1,4 @@
-﻿#if !COLORLESS
+#if !COLORLESS
 #define COLORFUL
 #endif
 

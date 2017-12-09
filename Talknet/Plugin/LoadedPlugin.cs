@@ -1,4 +1,4 @@
-﻿namespace Talknet.Plugin {
+namespace Talknet.Plugin {
     public struct LoadedPlugin {
         public TalknetPluginInfo Info;
         public ITalknetPlugin PluginInstance;

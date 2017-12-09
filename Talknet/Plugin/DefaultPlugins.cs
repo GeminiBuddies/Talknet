@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Talknet.Plugin;
 
 [assembly: TalknetPluginAssembly(typeof(DefaultPlugin), typeof(DefaultPlugin))]

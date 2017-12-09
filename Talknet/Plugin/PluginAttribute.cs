@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Talknet.Plugin {
     public struct TalknetPluginInfo {
