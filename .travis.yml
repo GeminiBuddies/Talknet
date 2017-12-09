@@ -4,5 +4,5 @@ dotnet: 2.0.3
 dist: xenial
 script:
  - dotnet restore
- - dotnet build
-
+ - dotnet build -c Debug
+ - dotnet build -c Release

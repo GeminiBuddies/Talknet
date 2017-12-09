@@ -18,10 +18,9 @@ namespace Talknet {
 
     // do not implement override, now
     public class CommandInvoker {
-        // TODO: support custom parsers
         public delegate object Parser(string src);
-        private readonly Dictionary<Type, Parser> _parserDict;
-        private readonly Dictionary<Type, Parser> _defaultParserDict; // ctor and implicit 
+        private readonly Dictionary<Type, Parser> _parserDict; // custom parser
+        private static readonly Dictionary<Type, Parser> _defaultParserDict = new Dictionary<Type, Parser>(); // ctor and implicit, explicit conversion operator
 
         private struct PackedHandler {
             public Delegate Handler;
@@ -37,36 +36,38 @@ namespace Talknet {
 
         public CommandInvoker() {
             _parserDict = new Dictionary<Type, Parser>();
-            _defaultParserDict = new Dictionary<Type, Parser>();
             _handlers = new Dictionary<string, PackedHandler>();
             _defaultHandler = null;
         }
 
         public void Register(string command, Delegate handler) {
             if (_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
-
             RegisterOrUpdate(command, handler);
         }
 
         public void Register(params CommandHandlerPair[] pairs) {
             if (pairs == null) throw new ArgumentNullException(nameof(pairs));
-
             foreach (var i in pairs) Register(i.Command, i.Handler);
         }
 
         public void Update(string command, Delegate handler) {
             if (!_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
-
             RegisterOrUpdate(command, handler);
         }
 
         public void Update(params CommandHandlerPair[] pairs) {
             if (pairs == null) throw new ArgumentNullException(nameof(pairs));
-
             foreach (var i in pairs) Update(i.Command, i.Handler);
         }
 
-        public void RegisterOrUpdate(string command, Delegate handler) => _handlers[command] = checkAndPackHandler(handler);
+        public Delegate this[string command] {
+            set => RegisterOrUpdate(command, value);
+        }
+
+        public void RegisterOrUpdate(string command, Delegate handler) {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+            _handlers[command] = checkAndPackHandler(handler);
+        }
 
         public void Default(DefaultHandler handler) { _defaultHandler = handler; }
 
@@ -75,7 +76,7 @@ namespace Talknet {
             _parserDict[destType] = parser ?? throw new ArgumentNullException(nameof(parser));
         }
 
-        private void tryGenDefaultParser(Type destType) {
+        private static void tryGenDefaultParser(Type destType) {
             if (_defaultParserDict.ContainsKey(destType)) return;
 
             Type[] paramList = { typeof(string) };
@@ -83,15 +84,14 @@ namespace Talknet {
                 _defaultParserDict[destType] = str => ctor.Invoke(new object[] { str });
             } else if (destType.GetMethod(Consts.CastOperatorNameExplicit, paramList) is MethodInfo opExp) { // or a explicit operator
                 _defaultParserDict[destType] = str => opExp.Invoke(null, new object[] { str });
-            } else if (destType.GetMethod(Consts.CastOperatorNameImplicit, paramList) is MethodInfo opImp) {
-                // or a implicit operator
+            } else if (destType.GetMethod(Consts.CastOperatorNameImplicit, paramList) is MethodInfo opImp) { // or a implicit operator
                 _defaultParserDict[destType] = str => opImp.Invoke(null, new object[] { str });
             } else {
                 _defaultParserDict[destType] = null;
             }
         }
 
-        private PackedHandler checkAndPackHandler(Delegate handler) {
+        private static PackedHandler checkAndPackHandler(Delegate handler) {
             // TODO: write a description
             if (handler.Method.ReturnType != typeof(int)) throw new InvalidCommandHandlerException("returntype");
 
@@ -134,7 +134,7 @@ namespace Talknet {
                 var destType = handler.Parameters[i].ParameterType;
                 if (_parserDict.ContainsKey(destType)) { // is there a parser
                     args.Add(_parserDict[destType](arguments[i]));
-                } else if (_defaultParserDict.TryGetValue(destType, out var parser) && parser != null) { // or a constructor from string?
+                } else if (_defaultParserDict.TryGetValue(destType, out var parser) && parser != null) { // or a default parser
                     args.Add(parser(arguments[i]));
                 } else throw new Exception(); // Todo
             }
@@ -156,7 +156,11 @@ namespace Talknet {
         }
 
         public int InvokeFromLine(string line) {
-            throw new NotImplementedException();
+            if (line == null) throw new ArgumentNullException(nameof(line));
+            List<string> tokens = LineTokenizer.GetTokens(line);
+
+            if (tokens.Count < 1) return 0;
+            return Invoke(tokens[0], tokens.Take(1, tokens.Count - 1).ToArray());
         }
     }
 }
