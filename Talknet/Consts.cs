@@ -12,5 +12,8 @@ namespace Talknet {
 
         public const string PluginDirectoryName = "plugins";
         public const string PluginNamePattern = @"\A[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*\z";
+
+        public const string CastOperatorNameImplicit = "op_Implicit";
+        public const string CastOperatorNameExplicit = "op_Explicit";
     }
 }
