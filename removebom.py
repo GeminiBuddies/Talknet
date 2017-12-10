@@ -1,4 +1,4 @@
-#!/usr/rb/env python3
+#!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
 "remove bom for all utf-8 encoded file."
