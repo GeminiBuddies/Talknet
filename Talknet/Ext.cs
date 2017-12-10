@@ -38,5 +38,18 @@ namespace Talknet {
             en.Dispose();
             yield return cachea;
         }
+
+        internal static bool IsValidInteger(string v, out int x) {
+            x = 0;
+            if (int.TryParse(v, out int y)) {
+                if (y != 0 && v[0] == '0') return false;
+                x = y;
+                return true;
+            }
+
+            return false;
+        }
+
+        internal static string JoinBy(this IEnumerable<string> arr, string separator) => string.Join(separator, arr);
     }
 }

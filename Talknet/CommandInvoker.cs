@@ -7,6 +7,7 @@ namespace Talknet {
     public struct CommandHandlerPair {
         public string Command;
         public Delegate Handler;
+        public string Description;
     }
 
     [Serializable]
@@ -41,11 +42,13 @@ namespace Talknet {
         public delegate int DefaultHandler(params string[] value);
 
         private readonly Dictionary<string, PackedHandler> _handlers;
+        private readonly Dictionary<string, string> _desc;
         private DefaultHandler _defaultHandler;
 
         public CommandInvoker() {
             _parserDict = new Dictionary<Type, Parser>();
             _handlers = new Dictionary<string, PackedHandler>();
+            _desc = new Dictionary<string, string>();
             _defaultHandler = null;
         }
 
@@ -54,9 +57,14 @@ namespace Talknet {
             RegisterOrUpdate(command, handler);
         }
 
+        public void Register(string command, Delegate handler, string desc) {
+            if (_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
+            RegisterOrUpdate(command, handler, desc);
+        }
+
         public void Register(params CommandHandlerPair[] pairs) {
             if (pairs == null) throw new ArgumentNullException(nameof(pairs));
-            foreach (var i in pairs) Register(i.Command, i.Handler);
+            foreach (var i in pairs) Register(i.Command, i.Handler, i.Description);
         }
 
         public void Update(string command, Delegate handler) {
@@ -64,18 +72,21 @@ namespace Talknet {
             RegisterOrUpdate(command, handler);
         }
 
+        public void Update(string command, Delegate handler, string desc) {
+            if (!_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
+            RegisterOrUpdate(command, handler, desc);
+        }
+
         public void Update(params CommandHandlerPair[] pairs) {
             if (pairs == null) throw new ArgumentNullException(nameof(pairs));
-            foreach (var i in pairs) Update(i.Command, i.Handler);
+            foreach (var i in pairs) Update(i.Command, i.Handler, i.Description);
         }
 
-        public Delegate this[string command] {
-            set => RegisterOrUpdate(command, value);
-        }
-
-        public void RegisterOrUpdate(string command, Delegate handler) {
+        public void RegisterOrUpdate(string command, Delegate handler) => RegisterOrUpdate(command, handler, genDefaultDesc(command, handler));
+        public void RegisterOrUpdate(string command, Delegate handler, string desc) {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
             _handlers[command] = checkAndPackHandler(handler);
+            _desc[command] = desc;
         }
 
         public void Default(DefaultHandler handler) { _defaultHandler = handler; }
@@ -85,20 +96,29 @@ namespace Talknet {
             _parserDict[destType] = parser ?? throw new ArgumentNullException(nameof(parser));
         }
 
+        public string GetDescription(string command) => 
+            _desc.ContainsKey(command)
+            ? _desc[command]
+            : throw new ArgumentOutOfRangeException(nameof(command));
+
+        private static string genDefaultDesc(string command, Delegate handler) {
+            return command + " " + handler.Method.GetParameters().Select(info => info.ParameterType.Name).JoinBy(" ");
+        }
+
         private static void tryGenDefaultParser(Type destType) {
             if (_defaultParserDict.ContainsKey(destType)) return;
 
             Type[] paramList = { typeof(string) };
-            if (destType.GetConstructor(paramList) is ConstructorInfo ctor) { 
+            if (destType.GetConstructor(paramList) is ConstructorInfo ctor) {
                 // is there a constructor from string?
                 _defaultParserDict[destType] = str => ctor.Invoke(new object[] { str });
-            } else if (destType.GetMethod(CastOperatorNameExplicit, paramList) is MethodInfo opExp) { 
+            } else if (destType.GetMethod(CastOperatorNameExplicit, paramList) is MethodInfo opExp) {
                 // or an explicit operator
                 _defaultParserDict[destType] = str => opExp.Invoke(null, new object[] { str });
-            } else if (destType.GetMethod(CastOperatorNameImplicit, paramList) is MethodInfo opImp) { 
+            } else if (destType.GetMethod(CastOperatorNameImplicit, paramList) is MethodInfo opImp) {
                 // or an implicit operator
                 _defaultParserDict[destType] = str => opImp.Invoke(null, new object[] { str });
-            } else if (destType.GetMethod(ParseFunctionName, BindingFlags.Static | BindingFlags.Public, null, paramList, null) is MethodInfo p) { 
+            } else if (destType.GetMethod(ParseFunctionName, BindingFlags.Static | BindingFlags.Public, null, paramList, null) is MethodInfo p) {
                 // or a 'static T T.Parse(string)'
                 _defaultParserDict[destType] = str => p.Invoke(null, new object[] { str });
             } else {

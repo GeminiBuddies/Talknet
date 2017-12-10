@@ -26,17 +26,6 @@ using Talknet.Plugin;
 
 namespace Talknet {
     public static class MainClass {
-        internal static bool isValidInt(string v, out int x) {
-            x = 0;
-            if (int.TryParse(v, out int y)) {
-                if (y != 0 && v[0] == '0') return false;
-                x = y;
-                return true;
-            }
-
-            return false;
-        }
-
         static readonly string ipPortPattern = @"\A(?<ip>(?<ipa>\d{1,3})\.(?<ipb>\d{1,3})\.(?<ipc>\d{1,3})\.(?<ipd>\d{1,3})):(?<port>\d{1,5})\z";
         static readonly Regex ipPortRegex = new Regex(ipPortPattern);
 
@@ -148,8 +137,8 @@ namespace Talknet {
             if (matches.Count == 1) {
                 match = matches[0];
 
-                if (new[] { "ipa", "ipb", "ipc", "ipd" }.All(str => isValidInt(match.Groups[str].Value, out int x) && x >= 0 && x <= 255)) {
-                    if (isValidInt(match.Groups["port"].Value, out port) && port > 0 && port < 65536) {
+                if (new[] { "ipa", "ipb", "ipc", "ipd" }.All(str => Ext.IsValidInteger(match.Groups[str].Value, out int x) && x >= 0 && x <= 255)) {
+                    if (Ext.IsValidInteger(match.Groups["port"].Value, out port) && port > 0 && port < 65536) {
                         valid = true;
                     }
                 }
