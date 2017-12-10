@@ -22,6 +22,8 @@ namespace Talknet {
         protected const string CastOperatorNameImplicit = "op_Implicit";
         protected const string CastOperatorNameExplicit = "op_Explicit";
         protected const string ParseFunctionName = "Parse";
+        protected const string AddFunctionName = "Add";
+        protected const string ToArrayFunctionName = "ToArray";
 
         public delegate object Parser(string src);
         // custom parsers
@@ -96,7 +98,7 @@ namespace Talknet {
             _parserDict[destType] = parser ?? throw new ArgumentNullException(nameof(parser));
         }
 
-        public string GetDescription(string command) => 
+        public string GetDescription(string command) =>
             _desc.ContainsKey(command)
             ? _desc[command]
             : throw new ArgumentOutOfRangeException(nameof(command));
@@ -176,16 +178,19 @@ namespace Talknet {
             }
 
             if (handler.HasParamArray) {
-                var paramArray = new List<object>();
                 var argcount = arguments.Length;
                 var paramArrayType = handler.ParamArrayType;
+                var paramArrayListType = typeof(List<>).MakeGenericType(paramArrayType);
+                var paramArray = Activator.CreateInstance(paramArrayListType);
+                var paramArrayListAdder = paramArrayListType.GetMethod(AddFunctionName, new[] { paramArrayType });
+                var paramArrayListToArray = paramArrayListType.GetMethod(ToArrayFunctionName, new Type[] { });
 
                 if (!_parserDict.TryGetValue(paramArrayType, out var parser) &&
                     !(_defaultParserDict.TryGetValue(paramArrayType, out parser) && parser != null)) throw new Exception(); // Todo
 
-                for (var i = count; i < argcount; ++i) paramArray.Add(parser(arguments[i]));
+                for (var i = count; i < argcount; ++i) paramArrayListAdder.Invoke(paramArray, new[] { parser(arguments[i]) });
 
-                args.Add(paramArray.ToArray());
+                args.Add(paramArrayListToArray.Invoke(paramArray, new object[] { }));
             }
 
             return (int)handler.Handler.DynamicInvoke(args.ToArray());
@@ -193,10 +198,9 @@ namespace Talknet {
 
         public int InvokeFromLine(string line) {
             if (line == null) throw new ArgumentNullException(nameof(line));
-            List<string> tokens = LineTokenizer.GetTokens(line);
+            var tokens = LineTokenizer.GetTokens(line);
 
-            if (tokens.Count < 1) return 0;
-            return Invoke(tokens[0], tokens.Take(1, tokens.Count - 1).ToArray());
+            return tokens.Count < 1 ? 0 : Invoke(tokens[0], tokens.Take(1, tokens.Count - 1).ToArray());
         }
     }
 }

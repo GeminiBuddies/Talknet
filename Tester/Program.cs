@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Linq;
 using Talknet;
 
 namespace Tester {
@@ -13,8 +14,9 @@ namespace Tester {
         public static void Main(string[] args) {
             var inv = new CommandInvoker();
             inv.Register("hhh", (Func<StringBuilder, int, int>)b);
+            inv.Register("aaa", (Func<int[], int>)(i => i.Sum()));
 
-            inv.InvokeFromLine("hhh asdiobasiodbfioasbfioabsfaosbdfioasdf 233");
+            inv.InvokeFromLine("aaa 2333 2233 4396 3154");
         }
     }
 }
