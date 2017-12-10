@@ -18,9 +18,18 @@ namespace Talknet {
 
     // do not implement override, now
     public class CommandInvoker {
+        protected const string CastOperatorNameImplicit = "op_Implicit";
+        protected const string CastOperatorNameExplicit = "op_Explicit";
+        protected const string ParseFunctionName = "Parse";
+
         public delegate object Parser(string src);
-        private readonly Dictionary<Type, Parser> _parserDict; // custom parser
-        private static readonly Dictionary<Type, Parser> _defaultParserDict = new Dictionary<Type, Parser>(); // ctor and implicit, explicit conversion operator
+        // custom parsers
+        private readonly Dictionary<Type, Parser> _parserDict;
+        // for ctor and implicit, explicit conversion operator
+        private static readonly Dictionary<Type, Parser> _defaultParserDict = new Dictionary<Type, Parser>() {
+            [typeof(string)] = str => str,
+            [typeof(char)] = str => str.Length == 1 ? str[0] : throw new FormatException(),
+        };
 
         private struct PackedHandler {
             public Delegate Handler;
@@ -80,13 +89,20 @@ namespace Talknet {
             if (_defaultParserDict.ContainsKey(destType)) return;
 
             Type[] paramList = { typeof(string) };
-            if (destType.GetConstructor(paramList) is ConstructorInfo ctor) { // or a constructor from string?
+            if (destType.GetConstructor(paramList) is ConstructorInfo ctor) { 
+                // is there a constructor from string?
                 _defaultParserDict[destType] = str => ctor.Invoke(new object[] { str });
-            } else if (destType.GetMethod(Consts.CastOperatorNameExplicit, paramList) is MethodInfo opExp) { // or a explicit operator
+            } else if (destType.GetMethod(CastOperatorNameExplicit, paramList) is MethodInfo opExp) { 
+                // or an explicit operator
                 _defaultParserDict[destType] = str => opExp.Invoke(null, new object[] { str });
-            } else if (destType.GetMethod(Consts.CastOperatorNameImplicit, paramList) is MethodInfo opImp) { // or a implicit operator
+            } else if (destType.GetMethod(CastOperatorNameImplicit, paramList) is MethodInfo opImp) { 
+                // or an implicit operator
                 _defaultParserDict[destType] = str => opImp.Invoke(null, new object[] { str });
+            } else if (destType.GetMethod(ParseFunctionName, BindingFlags.Static | BindingFlags.Public, null, paramList, null) is MethodInfo p) { 
+                // or a 'static T T.Parse(string)'
+                _defaultParserDict[destType] = str => p.Invoke(null, new object[] { str });
             } else {
+                // or just give up
                 _defaultParserDict[destType] = null;
             }
         }
