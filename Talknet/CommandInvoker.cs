@@ -185,7 +185,7 @@ namespace Talknet {
 
                 for (var i = count; i < argcount; ++i) paramArray.Add(parser(arguments[i]));
 
-                args.Add(paramArray);
+                args.Add(paramArray.ToArray());
             }
 
             return (int)handler.Handler.DynamicInvoke(args.ToArray());
