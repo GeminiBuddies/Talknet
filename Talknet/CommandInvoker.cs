@@ -7,7 +7,6 @@ namespace Talknet {
     public struct CommandHandlerPair {
         public string Command;
         public Delegate Handler;
-        public string Description;
     }
 
     [Serializable]
@@ -15,6 +14,14 @@ namespace Talknet {
         // public InvalidCommandHandlerException() { }
         public InvalidCommandHandlerException(string message) : base(message) { }
         public InvalidCommandHandlerException(string message, Exception inner) : base(message, inner) { }
+    }
+
+    [Serializable]
+    public class DoNotKnowHowToParseException : Exception {
+        public DoNotKnowHowToParseException() { }
+        public DoNotKnowHowToParseException(string message) : base(message) { }
+        public DoNotKnowHowToParseException(string message, Exception inner) : base(message, inner) { }
+        public DoNotKnowHowToParseException(Type destType) : this(destType.FullName) { }
     }
 
     // do not implement override, now
@@ -44,13 +51,11 @@ namespace Talknet {
         public delegate int DefaultHandler(params string[] value);
 
         private readonly Dictionary<string, PackedHandler> _handlers;
-        private readonly Dictionary<string, string> _desc;
         private DefaultHandler _defaultHandler;
 
         public CommandInvoker() {
             _parserDict = new Dictionary<Type, Parser>();
             _handlers = new Dictionary<string, PackedHandler>();
-            _desc = new Dictionary<string, string>();
             _defaultHandler = null;
         }
 
@@ -59,14 +64,9 @@ namespace Talknet {
             RegisterOrUpdate(command, handler);
         }
 
-        public void Register(string command, Delegate handler, string desc) {
-            if (_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
-            RegisterOrUpdate(command, handler, desc);
-        }
-
         public void Register(params CommandHandlerPair[] pairs) {
             if (pairs == null) throw new ArgumentNullException(nameof(pairs));
-            foreach (var i in pairs) Register(i.Command, i.Handler, i.Description);
+            foreach (var i in pairs) Register(i.Command, i.Handler);
         }
 
         public void Update(string command, Delegate handler) {
@@ -74,21 +74,14 @@ namespace Talknet {
             RegisterOrUpdate(command, handler);
         }
 
-        public void Update(string command, Delegate handler, string desc) {
-            if (!_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
-            RegisterOrUpdate(command, handler, desc);
-        }
-
         public void Update(params CommandHandlerPair[] pairs) {
             if (pairs == null) throw new ArgumentNullException(nameof(pairs));
-            foreach (var i in pairs) Update(i.Command, i.Handler, i.Description);
+            foreach (var i in pairs) Update(i.Command, i.Handler);
         }
 
-        public void RegisterOrUpdate(string command, Delegate handler) => RegisterOrUpdate(command, handler, genDefaultDesc(command, handler));
-        public void RegisterOrUpdate(string command, Delegate handler, string desc) {
+        public void RegisterOrUpdate(string command, Delegate handler) {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
             _handlers[command] = checkAndPackHandler(handler);
-            _desc[command] = desc;
         }
 
         public void Default(DefaultHandler handler) { _defaultHandler = handler; }
@@ -96,15 +89,6 @@ namespace Talknet {
         public void CustomParser(Type destType, Parser parser) {
             if (destType == null) throw new ArgumentNullException(nameof(destType));
             _parserDict[destType] = parser ?? throw new ArgumentNullException(nameof(parser));
-        }
-
-        public string GetDescription(string command) =>
-            _desc.ContainsKey(command)
-            ? _desc[command]
-            : throw new ArgumentOutOfRangeException(nameof(command));
-
-        private static string genDefaultDesc(string command, Delegate handler) {
-            return command + " " + handler.Method.GetParameters().Select(info => info.ParameterType.Name).JoinBy(" ");
         }
 
         private static void tryGenDefaultParser(Type destType) {
@@ -131,10 +115,10 @@ namespace Talknet {
 
         private static PackedHandler checkAndPackHandler(Delegate handler) {
             // TODO: write a description
-            if (handler.Method.ReturnType != typeof(int)) throw new InvalidCommandHandlerException("returntype");
+            if (handler.Method.ReturnType != typeof(int)) throw new InvalidCommandHandlerException("Return type of handler must be int.");
 
             var parameters = handler.Method.GetParameters();
-            // TODO: consider how to make this class works with optional parameters
+            // nolonger consider how to make this class works with optional parameters
             if (parameters.Any(param => param.IsOut || param.IsOptional) ||
                 parameters.AllExceptLastOne().Any(param => param.ParameterType.IsArray))
                 throw new InvalidCommandHandlerException("param");
@@ -174,7 +158,7 @@ namespace Talknet {
                     args.Add(_parserDict[destType](arguments[i]));
                 } else if (_defaultParserDict.TryGetValue(destType, out var parser) && parser != null) { // or a default parser
                     args.Add(parser(arguments[i]));
-                } else throw new Exception(); // Todo
+                } else throw new DoNotKnowHowToParseException(destType);
             }
 
             if (handler.HasParamArray) {
@@ -186,7 +170,7 @@ namespace Talknet {
                 var paramArrayListToArray = paramArrayListType.GetMethod(ToArrayFunctionName, new Type[] { });
 
                 if (!_parserDict.TryGetValue(paramArrayType, out var parser) &&
-                    !(_defaultParserDict.TryGetValue(paramArrayType, out parser) && parser != null)) throw new Exception(); // Todo
+                    !(_defaultParserDict.TryGetValue(paramArrayType, out parser) && parser != null)) throw new DoNotKnowHowToParseException(paramArrayType);
 
                 for (var i = count; i < argcount; ++i) paramArrayListAdder.Invoke(paramArray, new[] { parser(arguments[i]) });
 

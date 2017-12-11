@@ -75,13 +75,13 @@ namespace Talknet {
             PluginManager.LoadAndInitializePlugins();
         }
 
-        static bool exiting;
+        static bool _exiting;
         static CommandInvoker<int> carl;
         public static void Main(string[] args) {
             initialize();
 
-            exiting = false;
-            while (!exiting) {
+            _exiting = false;
+            while (!_exiting) {
                 printPrompt();
 
                 var line = Console.ReadLine().Trim();
@@ -109,7 +109,7 @@ namespace Talknet {
                     printErrMsgLine(ErrMsg.ExceptionStacktrace);
                     printErrMsgLine(ex.StackTrace);
 
-                    exiting = true;
+                    _exiting = true;
                     break;
                 }
             }
@@ -121,7 +121,7 @@ namespace Talknet {
         private static int exit(string command, string[] args) {
             if (args.Length != 0) throw new CommandArgumentException(command, "No argument expected.");
 
-            exiting = true;
+            _exiting = true;
             return 0;
         }
 

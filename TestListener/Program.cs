@@ -6,10 +6,10 @@ using System.Net.Sockets;
 
 namespace TestListener {
     static class Program {
-        static Socket sock;
-        static bool exiting = false;
+        static Socket _sock;
+        static bool _exiting;
 
-        static int Main(string[] args) {
+        public static int Main(string[] args) {
             if (args.Length == 0 || !int.TryParse(args[0], out int port)) {
                 string p;
 
@@ -24,7 +24,7 @@ namespace TestListener {
             var listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
 
-            sock = listener.AcceptSocket();
+            _sock = listener.AcceptSocket();
 
             new Thread(receiver).Start();
 
@@ -32,20 +32,21 @@ namespace TestListener {
                 string v;
                 if ((v = Console.ReadLine()) == null) break;
 
-                sock.Send(Encoding.UTF8.GetBytes(v));
+                _sock.Send(Encoding.UTF8.GetBytes(v));
             }
 
-            exiting = true;
+            _exiting = true;
             return 0;
         }
 
         static void receiver() {
-            while (!exiting) {
-                if (sock.Available > 0) {
-                    var length = sock.Available;
+            _exiting = false;
+            while (!_exiting) {
+                if (_sock.Available > 0) {
+                    var length = _sock.Available;
                     var buffer = new byte[length];
 
-                    sock.Receive(buffer);
+                    _sock.Receive(buffer);
                     string data = Encoding.UTF8.GetString(buffer);
 
                     Console.Write(data);
@@ -54,7 +55,7 @@ namespace TestListener {
                 }
             }
 
-            sock.Close();
+            _sock.Close();
         }
     }
 }
