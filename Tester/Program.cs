@@ -13,8 +13,8 @@ namespace Tester {
 
         public static void Main(string[] args) {
             var inv = new CommandInvoker();
-            inv.Register("hhh", (Func<StringBuilder, int, int>)b);
-            inv.Register("aaa", (Func<int[], int>)(i => i.Sum()));
+            inv.Register<StringBuilder, int>("hhh", b);
+            inv.Register("aaa", (int[] i) => i.Sum());
 
             inv.InvokeFromLine("aaa 2333 2233 4396 3154");
         }

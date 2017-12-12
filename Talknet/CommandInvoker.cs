@@ -4,11 +4,6 @@ using System.Linq;
 using System.Reflection;
 
 namespace Talknet {
-    public struct CommandHandlerPair {
-        public string Command;
-        public Delegate Handler;
-    }
-
     [Serializable]
     public class InvalidCommandHandlerException : Exception {
         // public InvalidCommandHandlerException() { }
@@ -25,7 +20,7 @@ namespace Talknet {
     }
 
     // do not implement override, now
-    public class CommandInvoker {
+    public partial class CommandInvoker {
         protected const string CastOperatorNameImplicit = "op_Implicit";
         protected const string CastOperatorNameExplicit = "op_Explicit";
         protected const string ParseFunctionName = "Parse";
@@ -63,20 +58,10 @@ namespace Talknet {
             if (_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
             RegisterOrUpdate(command, handler);
         }
-
-        public void Register(params CommandHandlerPair[] pairs) {
-            if (pairs == null) throw new ArgumentNullException(nameof(pairs));
-            foreach (var i in pairs) Register(i.Command, i.Handler);
-        }
-
+        
         public void Update(string command, Delegate handler) {
             if (!_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
             RegisterOrUpdate(command, handler);
-        }
-
-        public void Update(params CommandHandlerPair[] pairs) {
-            if (pairs == null) throw new ArgumentNullException(nameof(pairs));
-            foreach (var i in pairs) Update(i.Command, i.Handler);
         }
 
         public void RegisterOrUpdate(string command, Delegate handler) {
@@ -114,7 +99,6 @@ namespace Talknet {
         }
 
         private static PackedHandler checkAndPackHandler(Delegate handler) {
-            // TODO: write a description
             if (handler.Method.ReturnType != typeof(int)) throw new InvalidCommandHandlerException("Return type of handler must be int.");
 
             var parameters = handler.Method.GetParameters();
