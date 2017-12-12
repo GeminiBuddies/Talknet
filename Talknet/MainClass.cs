@@ -51,26 +51,7 @@ namespace Talknet {
 
         static void initialize() {
             refreshClient();
-
-            carl = new CommandInvoker<int>()
-                .RegisterNew("connect", connect)
-                .RegisterNew("c", connect)
-                .RegisterNew("disconnect", disconnect)
-                .RegisterNew("d", disconnect)
-                .RegisterNew("send", send)
-                .RegisterNew("s", send)
-                .RegisterNew("direct", direct)
-                .RegisterNew("dl", dl)
-                .RegisterNew("db", db)
-                .RegisterNew("quit", exit)
-                .RegisterNew("exit", exit)
-                .RegisterNew("q", exit)
-#if DEBUG
-                .RegisterNew("generr", (any, thing) => { try { throw new Exception("efi kwo semé"); } catch (Exception ex) { throw new TalknetCommandException("um-cyroga", ex); } })
-                .RegisterNew("genfatal", (any, thing) => throw new Exception("il-pavoka"))
-#endif
-            ;
-
+            
             _invoker = new CommandInvoker();
             _invoker.Register<IPEndPoint>("connect", Connect);
             _invoker.Register<IPEndPoint>("c", Connect);
@@ -102,7 +83,6 @@ namespace Talknet {
         }
 
         static bool _exiting;
-        static CommandInvoker<int> carl;
         static CommandInvoker _invoker;
         public static void Main(string[] args) {
             initialize();
@@ -119,8 +99,6 @@ namespace Talknet {
                     _invoker.InvokeFromLine(line);
                 } catch (CommandNotFoundException ex) {
                     printErrMsgLine(string.Format(ErrMsg.UnknownCommand, ex.Command));
-                } catch (CommandArgumentException ex) {
-                    printErrMsgLine($"{ex.Command}: {ex.Description}");
                 } catch (TalknetCommandException ex) {
                     printErrMsgLine(string.Format(ErrMsg.CommandExceptionDesc, ex.Message));
 
@@ -146,46 +124,11 @@ namespace Talknet {
         }
 
         // Command handlers
-        private static int exit(string command, string[] args) {
-            if (args.Length != 0) throw new CommandArgumentException(command, "No argument expected.");
-
-            return Exit();
-        }
-
         public static int Exit() {
             _exiting = true;
             return 0;
         }
-
-        private static int connect(string command, string[] args) {
-            if (args.Length != 1) throw new CommandArgumentException(command, "Expected exact 1 argument.");
-
-            string addr = args[0];
-            var matches = ipPortRegex.Matches(addr);
-            Match match = null;
-            bool valid = false;
-            int port; string ip;
-
-            if (matches.Count == 1) {
-                match = matches[0];
-
-                if (new[] { "ipa", "ipb", "ipc", "ipd" }.All(str => Ext.IsValidInteger(match.Groups[str].Value, out int x) && x >= 0 && x <= 255)) {
-                    if (Ext.IsValidInteger(match.Groups["port"].Value, out port) && port > 0 && port < 65536) {
-                        valid = true;
-                    }
-                }
-            }
-
-            if (!valid) throw new CommandArgumentException(command, $"Invalid address: \"{addr}\".");
-
-            ip = match.Groups["ip"].Value;
-            port = int.Parse(match.Groups["port"].Value);
-
-            remote = match.Value;
-
-            return Connect(new IPEndPoint(IPAddress.Parse(ip), port));
-        }
-
+        
         private static IPEndPoint parseIpEndPoint(string addr) {
             var matches = ipPortRegex.Matches(addr);
             Match match = null;
@@ -209,39 +152,7 @@ namespace Talknet {
 
             return new IPEndPoint(IPAddress.Parse(ip), port);
         }
-
-        private static int disconnect(string command, string[] args) {
-            if (args.Length != 0) throw new CommandArgumentException(command, "No argument expected.");
-
-            Disconnect();
-            return 0;
-        }
-
-        private static int send(string command, string[] args) {
-            if (args.Length == 0) throw new CommandArgumentException(command, string.Format(ErrMsg.ExpectedArgCountGe, 1));
-
-            foreach (var i in args) Send(i);
-            return 0;
-        }
-
-        private static int direct(string command, string[] args) {
-            if (args.Length != 1) throw new CommandArgumentException(command, string.Format(ErrMsg.ExpectedArgCountEq, 1));
-
-            if (args[0] == "line") return DirectMode(false);
-            else if (args[0] == "block") return DirectMode(true);
-            else throw new CommandArgumentException(command, $"Unexpected argument: \"{args[0]}\".");
-        }
-
-        private static int dl(string command, string[] args) {
-            if (args.Length != 0) throw new CommandArgumentException(command, ErrMsg.ExpectedNoArg);
-            return DirectMode(false);
-        }
-
-        private static int db(string command, string[] args) {
-            if (args.Length != 0) throw new CommandArgumentException(command, ErrMsg.ExpectedNoArg);
-            return DirectMode(true);
-        }
-
+        
         public static int Connect(IPEndPoint addr) {
             if (connected) throw new InvalidOperationException(ErrMsg.AlreadyConnected);
 
