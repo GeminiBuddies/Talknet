@@ -3,26 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Talknet {
-    internal class CommandNotFoundException : Exception {
-        public string Command { get; private set; }
-
-        public CommandNotFoundException(string command)
-            : base($"Command \"{command}\" not expected and no default handler provided.") {
-            Command = command;
-        }
-    }
-
-    internal class CommandArgumentException : Exception {
-        public string Command { get; private set; }
-        public string Description { get; private set; }
-
-        public CommandArgumentException(string command, string description)
-            : base($"Incorrect argument for command \"{command}\": {description}") {
-            Command = command;
-            Description = description;
-        }
-    }
-
     [Obsolete]
     public delegate T CommandHandler<T>(string cmd, string[] param);
     [Obsolete]

@@ -9,8 +9,7 @@ namespace Talknet.Plugin {
         PluginNoAttribute,
         PluginInvalidName
     }
-
-    [Serializable]
+    
     internal class PluginLoadingException : Exception {
         // public PluginLoadingException() { }
         public PluginLoadingException(string message) : base(message) { }

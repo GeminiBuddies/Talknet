@@ -4,21 +4,6 @@ using System.Linq;
 using System.Reflection;
 
 namespace Talknet {
-    [Serializable]
-    public class InvalidCommandHandlerException : Exception {
-        // public InvalidCommandHandlerException() { }
-        public InvalidCommandHandlerException(string message) : base(message) { }
-        public InvalidCommandHandlerException(string message, Exception inner) : base(message, inner) { }
-    }
-
-    [Serializable]
-    public class DoNotKnowHowToParseException : Exception {
-        public DoNotKnowHowToParseException() { }
-        public DoNotKnowHowToParseException(string message) : base(message) { }
-        public DoNotKnowHowToParseException(string message, Exception inner) : base(message, inner) { }
-        public DoNotKnowHowToParseException(Type destType) : this(destType.FullName) { }
-    }
-
     // do not implement override, now
     public partial class CommandInvoker {
         protected const string CastOperatorNameImplicit = "op_Implicit";
@@ -124,14 +109,14 @@ namespace Talknet {
 
         public int Invoke(string command, params string[] arguments) {
             if (!_handlers.ContainsKey(command)) {
-                return _defaultHandler?.Invoke() ?? throw new Exception();
+                return _defaultHandler?.Invoke() ?? throw new CommandNotFoundException(command);
             }
 
             var handler = _handlers[command];
             if (!handler.HasParamArray && arguments.Length != handler.Parameters.Length)
-                throw new TargetParameterCountException();
+                throw new CommandArgumentCountException(command);
             if (handler.HasParamArray && arguments.Length < handler.Parameters.Length)
-                throw new TargetParameterCountException();
+                throw new CommandArgumentCountException(command);
 
             // prepare args
             var args = new List<object>();
@@ -142,7 +127,7 @@ namespace Talknet {
                     args.Add(_parserDict[destType](arguments[i]));
                 } else if (_defaultParserDict.TryGetValue(destType, out var parser) && parser != null) { // or a default parser
                     args.Add(parser(arguments[i]));
-                } else throw new DoNotKnowHowToParseException(destType);
+                } else throw new DoNotKnowHowToParseException(destType, command);
             }
 
             if (handler.HasParamArray) {
@@ -154,7 +139,8 @@ namespace Talknet {
                 var paramArrayListToArray = paramArrayListType.GetMethod(ToArrayFunctionName, new Type[] { });
 
                 if (!_parserDict.TryGetValue(paramArrayType, out var parser) &&
-                    !(_defaultParserDict.TryGetValue(paramArrayType, out parser) && parser != null)) throw new DoNotKnowHowToParseException(paramArrayType);
+                    !(_defaultParserDict.TryGetValue(paramArrayType, out parser) && parser != null))
+                    throw new DoNotKnowHowToParseException(paramArrayType, command);
 
                 for (var i = count; i < argcount; ++i) paramArrayListAdder.Invoke(paramArray, new[] { parser(arguments[i]) });
 
