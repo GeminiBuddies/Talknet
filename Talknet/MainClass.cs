@@ -71,12 +71,39 @@ namespace Talknet {
 #endif
             ;
 
+            _invoker = new CommandInvoker();
+            _invoker.Register<IPEndPoint>("connect", Connect);
+            _invoker.Register<IPEndPoint>("c", Connect);
+            _invoker.Register("disconnect", Disconnect);
+            _invoker.Register("d", Disconnect);
+            _invoker.Register<string[]>("send", Send);
+            _invoker.Register<string[]>("s", Send);
+            _invoker.Register<string>("direct", DirectMode);
+            _invoker.Register("dl", () => DirectMode(false));
+            _invoker.Register("db", () => DirectMode(true));
+            _invoker.Register("quit", Exit);
+            _invoker.Register("exit", Exit);
+            _invoker.Register("q", Exit);
+#if DEBUG
+            _invoker.Register("generr", () => {
+                try {
+                    throw new Exception("efi kwo semé");
+                } catch (Exception ex) {
+                    throw new TalknetCommandException("um-cyroga", ex);
+                }
+            });
+            _invoker.Register("genfatal", () => throw new Exception("il-pavoka"));
+#endif
+
+            _invoker.CustomParser(typeof(IPEndPoint), parseIpEndPoint);
+
             PluginManager.InitializeManager();
             PluginManager.LoadAndInitializePlugins();
         }
 
         static bool _exiting;
         static CommandInvoker<int> carl;
+        static CommandInvoker _invoker;
         public static void Main(string[] args) {
             initialize();
 
@@ -88,7 +115,8 @@ namespace Talknet {
                 if (line.Length == 0) continue;
 
                 try {
-                    carl.InvokeFromLine(line);
+                    // carl.InvokeFromLine(line);
+                    _invoker.InvokeFromLine(line);
                 } catch (CommandNotFoundException ex) {
                     printErrMsgLine(string.Format(ErrMsg.UnknownCommand, ex.Command));
                 } catch (CommandArgumentException ex) {
@@ -121,6 +149,10 @@ namespace Talknet {
         private static int exit(string command, string[] args) {
             if (args.Length != 0) throw new CommandArgumentException(command, "No argument expected.");
 
+            return Exit();
+        }
+
+        public static int Exit() {
             _exiting = true;
             return 0;
         }
@@ -152,6 +184,30 @@ namespace Talknet {
             remote = match.Value;
 
             return Connect(new IPEndPoint(IPAddress.Parse(ip), port));
+        }
+
+        private static IPEndPoint parseIpEndPoint(string addr) {
+            var matches = ipPortRegex.Matches(addr);
+            Match match = null;
+            bool valid = false;
+            int port; string ip;
+
+            if (matches.Count == 1) {
+                match = matches[0];
+
+                if (new[] { "ipa", "ipb", "ipc", "ipd" }.All(str => Ext.IsValidInteger(match.Groups[str].Value, out int x) && x >= 0 && x <= 255)) {
+                    if (Ext.IsValidInteger(match.Groups["port"].Value, out port) && port > 0 && port < 65536) {
+                        valid = true;
+                    }
+                }
+            }
+
+            if (!valid) throw new ArgumentException();
+
+            ip = match.Groups["ip"].Value;
+            port = int.Parse(match.Groups["port"].Value);
+
+            return new IPEndPoint(IPAddress.Parse(ip), port);
         }
 
         private static int disconnect(string command, string[] args) {
@@ -189,6 +245,7 @@ namespace Talknet {
         public static int Connect(IPEndPoint addr) {
             if (connected) throw new InvalidOperationException(ErrMsg.AlreadyConnected);
 
+            remote = addr.ToString();
             client.Connect(addr);
             return 0;
         }
@@ -211,6 +268,17 @@ namespace Talknet {
 
             client.Send(cont);
             return 0;
+        }
+
+        public static int Send(params string[] cont) {
+            foreach (var s in cont) Send(s);
+            return 0;
+        }
+
+        public static int DirectMode(string mode) {
+            if (mode == "block") return DirectMode(true);
+            else if (mode == "line") return DirectMode(false);
+            throw new ArgumentException();
         }
 
         public static int DirectMode(bool blockMode) {
