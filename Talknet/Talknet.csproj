@@ -15,6 +15,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Update="CommandInvoker\i18n\CIErrMsg.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CIErrMsg.resx</DependentUpon>
+    </Compile>
     <Compile Update="i18n\ErrMsg.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -23,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="CommandInvoker\i18n\CIErrMsg.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CIErrMsg.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="i18n\ErrMsg.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrMsg.Designer.cs</LastGenOutput>
