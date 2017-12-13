@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ArgCountExceptionDesc" xml:space="preserve">
+    <value>Parameter count for command "{0}" mismath.</value>
+  </data>
   <data name="ParsingExceptionDesc" xml:space="preserve">
     <value>An exception occurred when trying to parse argument[{0}] ("{1}") to {2}.</value>
   </data>

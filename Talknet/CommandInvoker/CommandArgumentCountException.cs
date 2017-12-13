@@ -1,7 +1,8 @@
+using Talknet.CommandInvoker.i18n;
+
 namespace Talknet.CommandInvoker {
     public class CommandArgumentCountException : CommandInvokingException {
-        // Todo: write a desc
-        public CommandArgumentCountException(string command) : base(command) { }
+        public CommandArgumentCountException(string command) : base(command, string.Format(CIErrMsg.ArgCountExceptionDesc, command)) { }
         public CommandArgumentCountException(string command, string message) : base(command, message) { }
     }
 }

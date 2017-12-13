@@ -61,6 +61,15 @@ namespace Talknet.CommandInvoker.i18n {
         }
         
         /// <summary>
+        ///   查找类似 Parameter count for command &quot;{0}&quot; mismath. 的本地化字符串。
+        /// </summary>
+        internal static string ArgCountExceptionDesc {
+            get {
+                return ResourceManager.GetString("ArgCountExceptionDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 An exception occurred when trying to parse argument[{0}] (&quot;{1}&quot;) to {2}. 的本地化字符串。
         /// </summary>
         internal static string ParsingExceptionDesc {

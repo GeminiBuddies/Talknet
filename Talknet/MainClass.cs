@@ -95,17 +95,6 @@ namespace Talknet {
                     _invoker.InvokeFromLine(line);
                 } catch (CommandNotFoundException ex) {
                     printErrMsgLine(string.Format(ErrMsg.UnknownCommand, ex.Command));
-                } catch (TalknetCommandException ex) {
-                    printErrMsgLine(string.Format(ErrMsg.CommandExceptionDesc, ex.Message));
-
-                    if (ex.InnerException == null) {
-                        printErrMsgLine(ErrMsg.NoInnerException);
-                    } else {
-                        printErrMsgLine(string.Format(ErrMsg.InnerExceptionDesc, ex.InnerException.GetType().FullName,
-                            ex.InnerException.Message));
-                        printErrMsgLine(ErrMsg.ExceptionStacktrace);
-                        printErrMsgLine(ex.InnerException.StackTrace);
-                    }
                 } catch (CommandExitAbnormallyException ex) {
                     var innerException = ex.InnerException;
                     printErrMsgLine(ErrMsg.FatalException);
@@ -121,6 +110,21 @@ namespace Talknet {
                     printErrMsgLine(string.Format(ErrMsg.ExceptionDesc, innerException.GetType().FullName, innerException.Message));
                     printErrMsgLine(ErrMsg.ExceptionStacktrace);
                     printErrMsgLine(innerException.StackTrace);
+                } catch (CommandArgumentCountException ex) {
+                    printErrMsgLine(ex.Message);
+                } catch (DoNotKnowHowToParseException ex) {
+
+                } catch (TalknetCommandException ex) {
+                    printErrMsgLine(string.Format(ErrMsg.CommandExceptionDesc, ex.Message));
+
+                    if (ex.InnerException == null) {
+                        printErrMsgLine(ErrMsg.NoInnerException);
+                    } else {
+                        printErrMsgLine(string.Format(ErrMsg.InnerExceptionDesc, ex.InnerException.GetType().FullName,
+                            ex.InnerException.Message));
+                        printErrMsgLine(ErrMsg.ExceptionStacktrace);
+                        printErrMsgLine(ex.InnerException.StackTrace);
+                    }
                 }
             }
 
