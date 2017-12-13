@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
+
+# personally I suggest you use git-hook to run this program before commit
 
 "remove bom for all utf-8 encoded file."
 
