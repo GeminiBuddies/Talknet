@@ -19,8 +19,8 @@ namespace Talknet {
 
         // properties
         public Encoding DefaultEncoding { get; set; } = Consts.DefaultEncoding;
-        public bool Connected { get => client != null; }
-        public int BytesAvailable { get => Connected ? client.Client.Available : throw new InvalidOperationException(ErrMsg.NotConnected); }
+        public bool Connected => client != null;
+        public int BytesAvailable => Connected ? client.Client.Available : throw new InvalidOperationException(ErrMsg.NotConnected);
 
         // event
         public event TalknetTcpClientDataEventHandler OnData;

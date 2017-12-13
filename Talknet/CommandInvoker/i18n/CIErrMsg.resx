@@ -120,6 +120,9 @@
   <data name="ArgCountExceptionDesc" xml:space="preserve">
     <value>Parameter count for command "{0}" mismath.</value>
   </data>
+  <data name="IDKParseExceptionDesc" xml:space="preserve">
+    <value>No possible parser was found to parse parameters of type {0} for command "{1}".</value>
+  </data>
   <data name="ParsingExceptionDesc" xml:space="preserve">
     <value>An exception occurred when trying to parse argument[{0}] ("{1}") to {2}.</value>
   </data>

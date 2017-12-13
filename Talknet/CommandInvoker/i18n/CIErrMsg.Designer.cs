@@ -70,6 +70,15 @@ namespace Talknet.CommandInvoker.i18n {
         }
         
         /// <summary>
+        ///   查找类似 No possible parser was found to parse parameters of type {0} for command &quot;{1}&quot;. 的本地化字符串。
+        /// </summary>
+        internal static string IDKParseExceptionDesc {
+            get {
+                return ResourceManager.GetString("IDKParseExceptionDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 An exception occurred when trying to parse argument[{0}] (&quot;{1}&quot;) to {2}. 的本地化字符串。
         /// </summary>
         internal static string ParsingExceptionDesc {

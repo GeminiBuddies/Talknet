@@ -23,7 +23,7 @@ namespace Talknet {
     public class TalknetCommandException : Exception {
         // deleted
         // public TalknetCommandException() { }
-        // public TalknetCommandException(string message) : base(message) { }
+        public TalknetCommandException(string message) : base(message) { }
         public TalknetCommandException(string message, Exception inner) : base(message, inner) { }
     }
 }
