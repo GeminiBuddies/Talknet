@@ -11,7 +11,7 @@ namespace Talknet.Plugin {
             Plugins = new Dictionary<string, LoadedPlugin>();
         }
 
-        internal static void LoadAndInitializePlugins() {
+        internal static void LoadAndInitializePlugins(TalknetEnv env) {
             var pluginsCache = new List<LoadedPlugin>();
 
             pluginsCache.AddRange(LoadSelf());
@@ -30,7 +30,7 @@ namespace Talknet.Plugin {
             }
 
             foreach (var it in Plugins.Values) {
-                it.PluginInstance.PluginInitialize();
+                it.PluginInstance.PluginInitialize(env);
             }
         }
 

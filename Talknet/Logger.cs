@@ -5,8 +5,8 @@ using System.Linq;
 
 namespace Talknet {
     public static class Logger {
-        public static void Write(string value) => Exconsole.WriteRaw(value);
-        public static void WriteLine(string value) => Exconsole.WriteLineRaw(value);
+        public static void Write(string value) => Exconsole.Write(value);
+        public static void WriteLine(string value) => Exconsole.WriteLine(value);
 
         public static void WriteHighlight(string value) => Exconsole.Write("@c" + value + "@!");
         public static void WriteLineHighlight(string value) => Exconsole.Write("@c" + value + "@!\n");
