@@ -1,6 +1,6 @@
 using System;
 
-namespace Talknet.CommandInvoker {
+namespace Talknet.Invoker {
     public partial class CommandInvoker {
         public void Register(string command, Func<int> handler, params string[] alternativeForms) => Register(command, (Delegate)handler, alternativeForms);
         public void Register<T0>(string command, Func<T0, int> handler, params string[] alternativeForms) => Register(command, (Delegate)handler, alternativeForms);

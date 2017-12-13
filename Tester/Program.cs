@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Talknet;
-using Talknet.CommandInvoker;
+using Talknet.Invoker;
 
 namespace Tester {
     internal class Program {

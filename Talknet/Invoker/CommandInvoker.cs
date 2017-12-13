@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Talknet.CommandInvoker {
+namespace Talknet.Invoker {
     // do not implement override, now
     public partial class CommandInvoker {
         protected const string CastOperatorNameImplicit = "op_Implicit";

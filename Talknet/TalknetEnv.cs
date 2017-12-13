@@ -1,14 +1,15 @@
-// this class is frozen
-// multi-connection won't be implemented until I finish the (prototype of) plugin system.
+// multi-connection is still not implemented 
 
-/*
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Talknet.Invoker;
 
 namespace Talknet {
     public class TalknetEnv {
-        TalknetTcpClient client;
+        public Action<string> RemoteSetter;
+        public TalknetTcpClient Client;
+        public CommandInvoker Invoker;
     }
 }
-*/
+

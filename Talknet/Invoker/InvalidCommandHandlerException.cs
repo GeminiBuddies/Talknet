@@ -1,6 +1,6 @@
 using System;
 
-namespace Talknet.CommandInvoker {
+namespace Talknet.Invoker {
     public class InvalidCommandHandlerException : Exception {
         // public InvalidCommandHandlerException() { }
         public InvalidCommandHandlerException(string message) : base(message) { }

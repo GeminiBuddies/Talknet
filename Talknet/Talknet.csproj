@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="CommandInvoker\i18n\CIErrMsg.Designer.cs">
+    <Compile Update="Invoker\i18n\CIErrMsg.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>CIErrMsg.resx</DependentUpon>
@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="CommandInvoker\i18n\CIErrMsg.resx">
+    <EmbeddedResource Update="Invoker\i18n\CIErrMsg.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CIErrMsg.Designer.cs</LastGenOutput>
     </EmbeddedResource>

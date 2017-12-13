@@ -1,6 +1,6 @@
 using System;
 
-namespace Talknet.CommandInvoker {
+namespace Talknet.Invoker {
     public class CommandInvokingException : Exception {
         public string Command { get; }
 

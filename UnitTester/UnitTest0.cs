@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Talknet;
-using Talknet.CommandInvoker;
+using Talknet.Invoker;
 
 namespace UnitTester {
     [TestClass]

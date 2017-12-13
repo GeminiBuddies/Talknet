@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Talknet.CommandInvoker.i18n {
+namespace Talknet.Invoker.i18n {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Talknet.CommandInvoker.i18n {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Talknet.CommandInvoker.i18n.CIErrMsg", typeof(CIErrMsg).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Talknet.Invoker.i18n.CIErrMsg", typeof(CIErrMsg).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

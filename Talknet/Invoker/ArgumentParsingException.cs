@@ -1,7 +1,7 @@
 using System;
-using Talknet.CommandInvoker.i18n;
+using Talknet.Invoker.i18n;
 
-namespace Talknet.CommandInvoker {
+namespace Talknet.Invoker {
     public class ArgumentParsingException : CommandInvokingException {
         public Type TargetType { get; }
         public int ParamId { get; }

@@ -3,8 +3,8 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
-using Talknet.CommandInvoker;
 using Talknet.i18n;
+using Talknet.Invoker;
 using Talknet.Plugin;
 
 /*
@@ -24,7 +24,6 @@ using Talknet.Plugin;
 namespace Talknet {
     public static class MainClass {
         private const string MainLoopName = "Main Loop";
-        private static readonly string NL = Environment.NewLine;
 
         private static readonly string _ipPortPattern = @"\A(?<ip>(?<ipa>\d{1,3})\.(?<ipb>\d{1,3})\.(?<ipc>\d{1,3})\.(?<ipd>\d{1,3})):(?<port>\d{1,5})\z";
         private static readonly Regex _ipPortRegex = new Regex(_ipPortPattern);
@@ -41,7 +40,7 @@ namespace Talknet {
         private static void initialize() {
             refreshClient();
 
-            _invoker = new CommandInvoker.CommandInvoker();
+            _invoker = new CommandInvoker();
             _invoker.Register<IPEndPoint>("c", Connect, "connect");
             _invoker.Register("d", Disconnect, "disconnect");
             _invoker.Register<string[]>("s", Send, "send");
@@ -67,7 +66,7 @@ namespace Talknet {
         }
 
         private static bool _exiting;
-        private static CommandInvoker.CommandInvoker _invoker;
+        private static CommandInvoker _invoker;
         public static void Main(string[] args) {
             initialize();
 
@@ -79,7 +78,6 @@ namespace Talknet {
                 if (line.Length == 0) continue;
 
                 try {
-                    // carl.InvokeFromLine(line);
                     _invoker.InvokeFromLine(line);
                 } catch (CommandNotFoundException ex) {
                     Logger.Error(string.Format(ErrMsg.UnknownCommand, ex.Command), MainLoopName);
