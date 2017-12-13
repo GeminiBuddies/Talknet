@@ -14,7 +14,7 @@ using System.Text;
  * Command handlers catch this expection and ...
  * a) fatal exception, cannot continue;      b) a normal one;     c) failed to catch it or another exception while handling it
  * ↓                                         ↓                    ↓
- * Pack it into a TalknetCommandException    handle it            just throw it
+ * Pack it into a TalknetCommandException    handle it            just throw it, invoker will catch it and pack it in a "CommandExitAbnormallyException"
  * ↓ throw it                                                     ↓
  * Main loop show information and continue                        Main loop show information and exit
  */

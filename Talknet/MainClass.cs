@@ -26,12 +26,12 @@ using Talknet.Plugin;
 
 namespace Talknet {
     public static class MainClass {
-        static readonly string ipPortPattern = @"\A(?<ip>(?<ipa>\d{1,3})\.(?<ipb>\d{1,3})\.(?<ipc>\d{1,3})\.(?<ipd>\d{1,3})):(?<port>\d{1,5})\z";
-        static readonly Regex ipPortRegex = new Regex(ipPortPattern);
+        private static readonly string _ipPortPattern = @"\A(?<ip>(?<ipa>\d{1,3})\.(?<ipb>\d{1,3})\.(?<ipc>\d{1,3})\.(?<ipd>\d{1,3})):(?<port>\d{1,5})\z";
+        private static readonly Regex _ipPortRegex = new Regex(_ipPortPattern);
 
-        static bool connected { get => client?.Connected ?? false; }
-        static string remote = "";
-        static TalknetTcpClient client;
+        private static bool connected { get => client?.Connected ?? false; }
+        private static string remote = "";
+        private static TalknetTcpClient client;
 
 #if COLORLESS
         static string getPrompt() => (connected ? remote : "offline") + "> ";
@@ -41,30 +41,25 @@ namespace Talknet {
 
         static void printRemote(string msg) => Console.WriteLine(msg);
 #else
-        static string getPrompt() => (connected ? "@g" + remote + "@!" : "offline") + "> ";
-        static void printPrompt() => Exconsole.Write(getPrompt());
+        private static string getPrompt() => (connected ? "@g" + remote + "@!" : "offline") + "> ";
+        private static void printPrompt() => Exconsole.Write(getPrompt());
 
-        static void printErrMsgLine(string msg) => Exconsole.WriteLine("@r" + msg + "@!");
+        private static void printErrMsgLine(string msg) => Exconsole.WriteLine("@r" + msg + "@!");
 
-        static void printRemote(string msg) => Exconsole.WriteLine("@y" + msg + "@!");
+        private static void printRemote(string msg) => Exconsole.WriteLine("@y" + msg + "@!");
 #endif
 
-        static void initialize() {
+        private static void initialize() {
             refreshClient();
-            
+
             _invoker = new CommandInvoker();
-            _invoker.Register<IPEndPoint>("connect", Connect);
-            _invoker.Register<IPEndPoint>("c", Connect);
-            _invoker.Register("disconnect", Disconnect);
-            _invoker.Register("d", Disconnect);
-            _invoker.Register<string[]>("send", Send);
-            _invoker.Register<string[]>("s", Send);
+            _invoker.Register<IPEndPoint>("c", Connect, "connect");
+            _invoker.Register("d", Disconnect, "disconnect");
+            _invoker.Register<string[]>("s", Send, "send");
             _invoker.Register<string>("direct", DirectMode);
             _invoker.Register("dl", () => DirectMode(false));
             _invoker.Register("db", () => DirectMode(true));
-            _invoker.Register("quit", Exit);
-            _invoker.Register("exit", Exit);
-            _invoker.Register("q", Exit);
+            _invoker.Register("q", Exit, "quit", "exit");
 #if DEBUG
             _invoker.Register("generr", () => {
                 try {
@@ -82,8 +77,8 @@ namespace Talknet {
             PluginManager.LoadAndInitializePlugins();
         }
 
-        static bool _exiting;
-        static CommandInvoker _invoker;
+        private static bool _exiting;
+        private static CommandInvoker _invoker;
         public static void Main(string[] args) {
             initialize();
 
@@ -105,18 +100,27 @@ namespace Talknet {
                     if (ex.InnerException == null) {
                         printErrMsgLine(ErrMsg.NoInnerException);
                     } else {
-                        printErrMsgLine(string.Format(ErrMsg.InnerExceptionDesc, ex.InnerException.GetType().FullName, ex.InnerException.Message));
+                        printErrMsgLine(string.Format(ErrMsg.InnerExceptionDesc, ex.InnerException.GetType().FullName,
+                            ex.InnerException.Message));
                         printErrMsgLine(ErrMsg.ExceptionStacktrace);
                         printErrMsgLine(ex.InnerException.StackTrace);
                     }
-                } catch (Exception ex) {
+                } catch (CommandExitAbnormallyException ex) {
+                    var innerException = ex.InnerException;
                     printErrMsgLine(ErrMsg.FatalException);
-                    printErrMsgLine(string.Format(ErrMsg.ExceptionDesc, ex.GetType().FullName, ex.Message));
+                    printErrMsgLine(string.Format(ErrMsg.ExceptionDesc, innerException.GetType().FullName, innerException.Message));
                     printErrMsgLine(ErrMsg.ExceptionStacktrace);
-                    printErrMsgLine(ex.StackTrace);
+                    printErrMsgLine(innerException.StackTrace);
 
                     _exiting = true;
                     break;
+                } catch (CommandInvokingException ex) {
+                    switch (ex) {
+                    case CommandArgumentCountException commandArgumentCountException:
+                        break;
+                    case DoNotKnowHowToParseException doNotKnowHowToParseException:
+                        break;
+                    }
                 }
             }
 
@@ -128,9 +132,9 @@ namespace Talknet {
             _exiting = true;
             return 0;
         }
-        
+
         private static IPEndPoint parseIpEndPoint(string addr) {
-            var matches = ipPortRegex.Matches(addr);
+            var matches = _ipPortRegex.Matches(addr);
             Match match = null;
             bool valid = false;
             int port; string ip;
@@ -152,7 +156,7 @@ namespace Talknet {
 
             return new IPEndPoint(IPAddress.Parse(ip), port);
         }
-        
+
         public static int Connect(IPEndPoint addr) {
             if (connected) throw new InvalidOperationException(ErrMsg.AlreadyConnected);
 

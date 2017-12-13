@@ -28,22 +28,26 @@ namespace Talknet {
             public Type ParamArrayType;
         }
 
-        public delegate int DefaultHandler(params string[] value);
-
         private readonly Dictionary<string, PackedHandler> _handlers;
+        private readonly Dictionary<string, string> _alterTable;
+
+        public delegate int DefaultHandler(params string[] value);
         private DefaultHandler _defaultHandler;
 
         public CommandInvoker() {
             _parserDict = new Dictionary<Type, Parser>();
             _handlers = new Dictionary<string, PackedHandler>();
+            _alterTable = new Dictionary<string, string>();
             _defaultHandler = null;
         }
 
-        public void Register(string command, Delegate handler) {
+        public void Register(string command, Delegate handler, params string[] alternativeForms) {
             if (_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
             RegisterOrUpdate(command, handler);
+
+            foreach (var alter in alternativeForms) _alterTable[alter] = command;
         }
-        
+
         public void Update(string command, Delegate handler) {
             if (!_handlers.ContainsKey(command)) throw new ArgumentOutOfRangeException(nameof(command));
             RegisterOrUpdate(command, handler);
@@ -108,15 +112,19 @@ namespace Talknet {
         }
 
         public int Invoke(string command, params string[] arguments) {
+            string inputCommand = command;
             if (!_handlers.ContainsKey(command)) {
-                return _defaultHandler?.Invoke() ?? throw new CommandNotFoundException(command);
+                if (_alterTable.ContainsKey(command))
+                    command = _alterTable[command];
+                else
+                    return _defaultHandler?.Invoke() ?? throw new CommandNotFoundException(command);
             }
 
             var handler = _handlers[command];
             if (!handler.HasParamArray && arguments.Length != handler.Parameters.Length)
-                throw new CommandArgumentCountException(command);
+                throw new CommandArgumentCountException(inputCommand);
             if (handler.HasParamArray && arguments.Length < handler.Parameters.Length)
-                throw new CommandArgumentCountException(command);
+                throw new CommandArgumentCountException(inputCommand);
 
             // prepare args
             var args = new List<object>();
@@ -127,7 +135,7 @@ namespace Talknet {
                     args.Add(_parserDict[destType](arguments[i]));
                 } else if (_defaultParserDict.TryGetValue(destType, out var parser) && parser != null) { // or a default parser
                     args.Add(parser(arguments[i]));
-                } else throw new DoNotKnowHowToParseException(destType, command);
+                } else throw new DoNotKnowHowToParseException(destType, inputCommand);
             }
 
             if (handler.HasParamArray) {
@@ -140,14 +148,22 @@ namespace Talknet {
 
                 if (!_parserDict.TryGetValue(paramArrayType, out var parser) &&
                     !(_defaultParserDict.TryGetValue(paramArrayType, out parser) && parser != null))
-                    throw new DoNotKnowHowToParseException(paramArrayType, command);
+                    throw new DoNotKnowHowToParseException(paramArrayType, inputCommand);
 
                 for (var i = count; i < argcount; ++i) paramArrayListAdder.Invoke(paramArray, new[] { parser(arguments[i]) });
 
                 args.Add(paramArrayListToArray.Invoke(paramArray, new object[] { }));
             }
 
-            return (int)handler.Handler.DynamicInvoke(args.ToArray());
+            try {
+                return (int) handler.Handler.DynamicInvoke(args.ToArray());
+            } catch (TargetInvocationException ex) {
+                if (ex.InnerException == null) throw;
+                var exc = ex.InnerException;
+
+                if (exc is TalknetCommandException) throw exc;
+                throw new CommandExitAbnormallyException(inputCommand, exc);
+            }
         }
 
         public int InvokeFromLine(string line) {
