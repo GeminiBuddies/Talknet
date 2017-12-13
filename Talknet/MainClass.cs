@@ -2,6 +2,7 @@ using System;
 using Talknet.i18n;
 using Talknet.Invoker;
 using Talknet.Plugin;
+using System.Linq;
 
 /*
  * Prompt :
@@ -42,6 +43,12 @@ namespace Talknet {
             });
             _invoker.Register("genfatal", () => throw new Exception("il-pavoka"));
 #endif
+            _invoker.Register("dp", () => {
+                Logger.WriteLine(
+                    PluginManager.Plugins.Select(p => $"{p.Key}: {p.Value.Info.ToString()}({p.Value.Source})").JoinBy(Environment.NewLine)
+                );
+                return 0;
+            }, "displayplugins");
 
             PluginManager.InitializeManager();
             PluginManager.LoadAndInitializePlugins(new TalknetEnv {
