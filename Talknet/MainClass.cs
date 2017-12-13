@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
+using Talknet.CommandInvoker;
 using Talknet.i18n;
 using Talknet.Plugin;
 
@@ -52,7 +53,7 @@ namespace Talknet {
         private static void initialize() {
             refreshClient();
 
-            _invoker = new CommandInvoker();
+            _invoker = new CommandInvoker.CommandInvoker();
             _invoker.Register<IPEndPoint>("c", Connect, "connect");
             _invoker.Register("d", Disconnect, "disconnect");
             _invoker.Register<string[]>("s", Send, "send");
@@ -78,7 +79,7 @@ namespace Talknet {
         }
 
         private static bool _exiting;
-        private static CommandInvoker _invoker;
+        private static CommandInvoker.CommandInvoker _invoker;
         public static void Main(string[] args) {
             initialize();
 
@@ -114,13 +115,12 @@ namespace Talknet {
 
                     _exiting = true;
                     break;
-                } catch (CommandInvokingException ex) {
-                    switch (ex) {
-                    case CommandArgumentCountException commandArgumentCountException:
-                        break;
-                    case DoNotKnowHowToParseException doNotKnowHowToParseException:
-                        break;
-                    }
+                } catch (ArgumentParsingException ex) {
+                    var innerException = ex.InnerException;
+                    printErrMsgLine(ex.Message);
+                    printErrMsgLine(string.Format(ErrMsg.ExceptionDesc, innerException.GetType().FullName, innerException.Message));
+                    printErrMsgLine(ErrMsg.ExceptionStacktrace);
+                    printErrMsgLine(innerException.StackTrace);
                 }
             }
 

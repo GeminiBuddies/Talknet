@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Talknet {
+namespace Talknet.CommandInvoker {
     internal static class LineTokenizer {
         public class UnbalancedQuotationMarksException : Exception { }
         public class NeedMoreLineException : Exception { }

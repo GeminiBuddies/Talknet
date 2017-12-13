@@ -1,10 +1,10 @@
 using System;
 
-namespace Talknet {
+namespace Talknet.CommandInvoker {
     public class DoNotKnowHowToParseException : CommandInvokingException {
         public Type TargetType { get; }
 
-        public DoNotKnowHowToParseException(Type destType) : base("") => TargetType = destType;
+        // Todo: write a desc
         public DoNotKnowHowToParseException(Type destType, string command) : base(command) => TargetType = destType;
     }
 }

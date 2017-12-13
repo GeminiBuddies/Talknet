@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Talknet;
+using Talknet.CommandInvoker;
 
 namespace Tester {
     internal class Program {
