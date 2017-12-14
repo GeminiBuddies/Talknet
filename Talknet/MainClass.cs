@@ -115,6 +115,7 @@ namespace Talknet {
                 }
             }
 
+            PluginManager.FinalizePlugins();
             if (Connected) _client.Disconnect();
         }
     }

@@ -44,5 +44,11 @@ namespace Talknet.Plugin {
 
             return pluginDir.Exists ? PluginLoader.LoadAllFromDirectory(pluginDir) : new LoadedPlugin[0];
         }
+
+        internal static void FinalizePlugins() {
+            foreach (var it in Plugins.Values) {
+                it.PluginInstance.PluginFinalize();
+            }
+        }
     }
 }
