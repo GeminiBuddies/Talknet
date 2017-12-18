@@ -21,7 +21,8 @@ using System.Linq;
 namespace Talknet {
     public static class MainClass {
         private const string MainLoopName = "Main Loop";
-        
+        private const string PluginLoaderName = "Plugin Loader";
+
         private static bool Connected => _client?.Connected ?? false;
         private static string _remote = "";
         private static TalknetTcpClient _client;
@@ -29,7 +30,7 @@ namespace Talknet {
         private static string getPrompt() => (Connected ? "@g" + _remote + "@!" : "offline") + "> ";
         private static void printPrompt() => Logger.Write(getPrompt());
 
-        private static void initialize() {
+        private static bool initialize() {
             _client = new TalknetTcpClient();
 
             _invoker = new CommandInvoker();
@@ -50,20 +51,40 @@ namespace Talknet {
                 return 0;
             }, "displayplugins");
 
-            PluginManager.InitializeManager();
-            PluginManager.LoadAndInitializePlugins(new TalknetEnv {
-                RemoteSetter = str => _remote = str,
-                Client = _client,
-                Invoker = _invoker,
-                Exiter = () => _exiting = true
-            });
+            try {
+                PluginManager.InitializeManager();
+                PluginManager.LoadAndInitializePlugins(new TalknetEnv {
+                    RemoteSetter = str => _remote = str,
+                    Client = _client,
+                    Invoker = _invoker,
+                    Exiter = () => _exiting = true
+                });
+            } catch (PluginLoadingException ex) {
+                Logger.ErrorMultilineWithCaller(PluginLoaderName,
+                    string.Format(ErrMsg.PluginLoadingException, ex.Message),
+                    ErrMsg.ExceptionStacktrace,
+                    ex.StackTrace
+                );
+
+                if (ex.InnerException is Exception ine) {
+                    Logger.ErrorMultilineWithCaller(PluginLoaderName,
+                        string.Format(ErrMsg.InnerExceptionDesc, ine.GetType().FullName, ine.Message),
+                        ErrMsg.ExceptionStacktrace,
+                        ine.StackTrace
+                    );
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         private static bool _exiting;
         private static CommandInvoker _invoker;
 
         public static void Main(string[] args) {
-            initialize();
+            if (!initialize()) return;
 
             _exiting = false;
             while (!_exiting) {

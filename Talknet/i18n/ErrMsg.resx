@@ -126,8 +126,15 @@
   <data name="EmptyArg" xml:space="preserve">
     <value>Argument {0} cannot be empty.</value>
   </data>
+  <data name="ErrorGettingPluginAttribute" xml:space="preserve">
+    <value>An exception occurred while trying to get the attribute of a plugin class.
+Plugin assembly: {0}, plugin class: {1}.</value>
+  </data>
   <data name="ExceptionDesc" xml:space="preserve">
     <value>{0}: {1}</value>
+  </data>
+  <data name="ExceptionGettingAttribute" xml:space="preserve">
+    <value>An exception occurred while trying to get the attribute of a Plugin class.</value>
   </data>
   <data name="ExceptionStacktrace" xml:space="preserve">
     <value>Stactrace:</value>
@@ -176,7 +183,7 @@ Plugin assembly: {0}.</value>
     <value>Plugin classes must have Attribute TalknetPluginAttribute.</value>
   </data>
   <data name="PluginItemNoInterface" xml:space="preserve">
-    <value>Plugin classes must implement Interface ITalknetPlugin</value>
+    <value>Plugin classes must implement Interface ITalknetPlugin.</value>
   </data>
   <data name="PluginItemNull" xml:space="preserve">
     <value>A null item.</value>
@@ -186,7 +193,13 @@ Plugin assembly: {0}.</value>
 Plugin assembly: {0}, invalid item: {1}.
 Info: {2}.</value>
   </data>
+  <data name="PluginLoadingException" xml:space="preserve">
+    <value>Error while loading plugins: {0}</value>
+  </data>
+  <data name="PluginSameName" xml:space="preserve">
+    <value>Two plugins with a same name ({0}). "{1}" and "{2}".</value>
+  </data>
   <data name="UnknownCommand" xml:space="preserve">
-    <value>Unknown command: {0}</value>
+    <value>Unknown command: {0}.</value>
   </data>
 </root>

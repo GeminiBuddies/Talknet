@@ -123,9 +123,9 @@ namespace Talknet.Plugin {
                 return 1;
             }
 
-            string nl = Environment.NewLine;
+            var nl = Environment.NewLine;
             bool removeReturn = nl.Length == 2, replaceReturn = nl == "\r";
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             int c;
             while ((c = Console.Read()) != -1) {
@@ -134,10 +134,10 @@ namespace Talknet.Plugin {
                 if (replaceReturn && c == '\r') c = '\n';
                 sb.Append((char)c);
 
-                if (!blockMode && c == '\n') {
-                    Send(sb.ToString());
-                    sb.Clear();
-                }
+                if (blockMode || c != '\n') continue;
+
+                Send(sb.ToString());
+                sb.Clear();
             }
 
             if (sb.Length != 0) Send(sb.ToString());
@@ -149,6 +149,7 @@ namespace Talknet.Plugin {
     }
 
     [TalknetPlugin("geminilab.dns", "Dns resolver", "1.0.0.0", "Gemini Laboratory")]
+    [Require("geminilab.default", LoadOrderType.Any)]
     internal class DnsPlugin : ITalknetPlugin {
         public void PluginFinalize() { }
 
