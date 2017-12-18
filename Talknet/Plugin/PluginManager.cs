@@ -30,6 +30,15 @@ namespace Talknet.Plugin {
                 Plugins[name] = plugin;
             }
 
+            // check requirements
+            foreach (var plugin in pluginsCache) {
+                foreach (var req in plugin.Requirements) {
+                    var reqName = req.Requirement;
+
+                    if (!Plugins.ContainsKey(reqName)) throw PluginLoadingException.ErrorReqNotSatisfied(plugin, reqName);
+                }
+            }
+            
             foreach (var it in Plugins.Values) {
                 it.PluginInstance.PluginInitialize(env);
             }

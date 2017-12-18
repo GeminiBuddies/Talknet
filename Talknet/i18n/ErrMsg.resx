@@ -199,6 +199,9 @@ Info: {2}.</value>
   <data name="PluginSameName" xml:space="preserve">
     <value>Two plugins with a same name ({0}). "{1}" and "{2}".</value>
   </data>
+  <data name="RequirementsCannotBeSatisfied" xml:space="preserve">
+    <value>The requirement of a plugin cannot be satisfied. "{0}"({1}) requires {0}, which unfound.</value>
+  </data>
   <data name="UnknownCommand" xml:space="preserve">
     <value>Unknown command: {0}.</value>
   </data>

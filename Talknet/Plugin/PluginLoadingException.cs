@@ -22,6 +22,10 @@ namespace Talknet.Plugin {
             return new PluginLoadingException(string.Format(ErrMsg.ErrorGettingPluginAttribute, assemblyName, itemName), inner);
         }
 
+        public static PluginLoadingException ErrorReqNotSatisfied(LoadedPlugin requirer, string required) {
+            return new PluginLoadingException(string.Format(ErrMsg.RequirementsCannotBeSatisfied, requirer, requirer.Info.Name, required));
+        }
+
         private static string getMsg(CommonLoadingErrorTypes error, string assemblyName, string itemName) {
             switch (error) {
             case CommonLoadingErrorTypes.AssemblyNoPluginList:

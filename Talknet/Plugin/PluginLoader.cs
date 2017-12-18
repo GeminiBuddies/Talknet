@@ -37,10 +37,11 @@ namespace Talknet.Plugin {
                 // so it is
                 var info = attr.Info;
                 var ins = Activator.CreateInstance(pluginType) as ITalknetPlugin;
+                var requirements = pluginType.GetCustomAttributes(typeof(RequireAttribute)).Select(t => t as RequireAttribute);
 
                 if (!_pluginNameRegex.IsMatch(info.Name)) throw new PluginLoadingException(Clet.PluginInvalidName, from, pluginType.FullName);
 
-                cache.Add(new LoadedPlugin { Info = info, PluginInstance = ins, Source = from });
+                cache.Add(new LoadedPlugin { Info = info, PluginInstance = ins, Source = from, Requirements = requirements.ToArray() });
             }
 
             return cache;
