@@ -299,7 +299,7 @@ namespace Talknet.i18n {
         }
         
         /// <summary>
-        ///   查找类似 The requirement of a plugin cannot be satisfied. &quot;{0}&quot;({1}) requires {0}, which unfound. 的本地化字符串。
+        ///   查找类似 The requirement of a plugin cannot be satisfied. &quot;{0}&quot;({1}) requires {2}, which unfound. 的本地化字符串。
         /// </summary>
         internal static string RequirementsCannotBeSatisfied {
             get {

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using Talknet.i18n;
@@ -13,7 +14,6 @@ namespace Talknet.Plugin {
     [TalknetPlugin("geminilab.default", "Default", "1.0.0.0", "Gemini Laboratory")]
     internal class DefaultPlugin : ITalknetPlugin {
         private static readonly string _ipPortPattern = @"\A(?<ip>(?<ipa>\d{1,3})\.(?<ipb>\d{1,3})\.(?<ipc>\d{1,3})\.(?<ipd>\d{1,3})):(?<port>\d{1,5})\z";
-
         private static readonly Regex _ipPortRegex = new Regex(_ipPortPattern);
 
         CommandInvoker _invoker;
@@ -39,7 +39,7 @@ namespace Talknet.Plugin {
             _invoker.Register("db", () => DirectMode(true));
             _invoker.Register("q", Exit, "quit", "exit");
 
-            _invoker.CustomParser(typeof(IPEndPoint), parseIpEndPoint);
+            _invoker.CustomParser(typeof(IPEndPoint), ParseIpEndPoint);
         }
 
 
@@ -48,7 +48,7 @@ namespace Talknet.Plugin {
             return 0;
         }
 
-        private IPEndPoint parseIpEndPoint(string addr) {
+        internal static IPEndPoint ParseIpEndPoint(string addr) {
             var matches = _ipPortRegex.Matches(addr);
             Match match = null;
             bool valid = false;
@@ -149,7 +149,7 @@ namespace Talknet.Plugin {
     }
 
     [TalknetPlugin("geminilab.dns", "Dns resolver", "1.0.0.0", "Gemini Laboratory")]
-    [Require("geminilab.default", LoadOrderType.Any)]
+    [Require("geminilab.default", LoadOrderType.RequiredFirst)]
     internal class DnsPlugin : ITalknetPlugin {
         public void PluginFinalize() { }
 
@@ -164,6 +164,35 @@ namespace Talknet.Plugin {
                     return 0;
                 }
             );
+
+            env.Invoker.CustomParser(typeof(IPEndPoint), ParseIpEndPointWithDns);
+        }
+
+        private static readonly string _domainPattern = @"(?=^.{4,253}$)(^(?<domain>((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}):(?<port>\d{1,5})$)";
+        private static readonly Regex _domainRegex = new Regex(_domainPattern);
+
+        public IPEndPoint ParseIpEndPointWithDns(string addr) {
+            try {
+                var res = DefaultPlugin.ParseIpEndPoint(addr);
+                return res;
+            } catch (ArgumentException) {
+                if (_domainRegex.IsMatch(addr)) {
+                    try {
+                        var match = _domainRegex.Match(addr);
+
+                        if (Ext.IsValidInteger(match.Groups["port"].Value, out int port) && port > 0 && port < 65536) {
+                            var domain = match.Groups["domain"].Value;
+
+                            if (!(Dns.GetHostAddresses(domain).FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork) is IPAddress ipaddr)) throw new Exception();
+                            return new IPEndPoint(ipaddr, port);
+                        }
+                    } catch (Exception) {
+                        throw new ArgumentException();
+                    }
+                }
+
+                throw new ArgumentException();
+            }
         }
     }
 }
