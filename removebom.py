@@ -22,6 +22,8 @@ def processFile(path: str):
         rt.close()
 
         print("process %s" % path)
+        print("git add %s" % path)
+        os.system("git add %s" % path)
     else:
         rb.close()
 

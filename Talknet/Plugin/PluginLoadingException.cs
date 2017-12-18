@@ -9,13 +9,18 @@ namespace Talknet.Plugin {
         PluginNoAttribute,
         PluginInvalidName
     }
-    
+
     internal class PluginLoadingException : Exception {
         // public PluginLoadingException() { }
         public PluginLoadingException(string message) : base(message) { }
+
         public PluginLoadingException(string message, Exception inner) : base(message, inner) { }
 
         public PluginLoadingException(CommonLoadingErrorTypes error, string assemblyName, string itemName = null) : base(getMsg(error, assemblyName, itemName)) { }
+
+        public static PluginLoadingException ErrorGettingAttr(string assemblyName, string itemName, Exception inner) {
+            return new PluginLoadingException(string.Format(ErrMsg.ErrorGettingPluginAttribute, assemblyName, itemName), inner);
+        }
 
         private static string getMsg(CommonLoadingErrorTypes error, string assemblyName, string itemName) {
             switch (error) {

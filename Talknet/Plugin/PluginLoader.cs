@@ -8,7 +8,7 @@ using Clet = Talknet.Plugin.CommonLoadingErrorTypes;
 
 namespace Talknet.Plugin {
     internal class PluginLoader {
-        private static readonly Regex pluginNameRegex = new Regex(Consts.PluginNamePattern);
+        private static readonly Regex _pluginNameRegex = new Regex(Consts.PluginNamePattern);
         
         // do not handle exceptions, just throw them
         internal static IEnumerable<LoadedPlugin> LoadFromAssembly(Assembly ass, string from) {
@@ -24,13 +24,21 @@ namespace Talknet.Plugin {
                 if (pluginType == null) throw new PluginLoadingException(Clet.PluginListNullItem, from);
 
                 if (!pluginType.GetInterfaces().Contains(typeof(ITalknetPlugin))) throw new PluginLoadingException(Clet.PluginNoInterface, from, pluginType.FullName);
-                if (!(pluginType.GetCustomAttribute(typeof(TalknetPluginAttribute)) is TalknetPluginAttribute attr)) throw new PluginLoadingException(Clet.PluginNoAttribute, from, pluginType.FullName);
+                TalknetPluginAttribute attr = null;
+
+                try {
+                    if (pluginType.GetCustomAttribute(typeof(TalknetPluginAttribute)) is TalknetPluginAttribute v) attr = v;
+                } catch (Exception ex) {
+                    throw PluginLoadingException.ErrorGettingAttr(from, pluginType.FullName, ex);
+                }
+
+                if (attr == null) throw new PluginLoadingException(Clet.PluginNoAttribute, from, pluginType.FullName);
 
                 // so it is
                 var info = attr.Info;
                 var ins = Activator.CreateInstance(pluginType) as ITalknetPlugin;
 
-                if (!pluginNameRegex.IsMatch(info.Name)) throw new PluginLoadingException(Clet.PluginInvalidName, from, pluginType.FullName);
+                if (!_pluginNameRegex.IsMatch(info.Name)) throw new PluginLoadingException(Clet.PluginInvalidName, from, pluginType.FullName);
 
                 cache.Add(new LoadedPlugin { Info = info, PluginInstance = ins, Source = from });
             }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Talknet.i18n;
 
 namespace Talknet.Plugin {
     internal static class PluginManager {
@@ -23,7 +24,7 @@ namespace Talknet.Plugin {
 
                 if (Plugins.ContainsKey(name)) {
                     if (plugin.PluginInstance.GetType().IsInstanceOfType(Plugins[name].PluginInstance)) continue;
-                    throw new PluginLoadingException($"Two plugins with a same name.\n{Plugins[name]} and {plugin}.");
+                    throw new PluginLoadingException(string.Format(ErrMsg.PluginSameName, name, Plugins[name], plugin));
                 }
 
                 Plugins[name] = plugin;
