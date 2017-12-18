@@ -149,6 +149,7 @@ namespace Talknet.Plugin {
     }
 
     [TalknetPlugin("geminilab.dns", "Dns resolver", "1.0.0.0", "Gemini Laboratory")]
+    [Require("geminilab.default", LoadOrderType.Any)]
     internal class DnsPlugin : ITalknetPlugin {
         public void PluginFinalize() { }
 

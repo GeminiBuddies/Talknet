@@ -23,8 +23,25 @@ namespace Talknet.Plugin {
         }
     }
 
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
+    public sealed class RequireAttribute : Attribute {
+        internal string Requirement { get; }
+        internal LoadOrderType Order { get; }
+
+        public RequireAttribute(string requirement, LoadOrderType order) {
+            Requirement = requirement;
+            Order = order;
+        }
+    }
+
+    public enum LoadOrderType {
+        ThisFirst,
+        RequiredFirst,
+        Any
+    }
+
     [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class TalknetPluginAssemblyAttribute: Attribute {
+    public sealed class TalknetPluginAssemblyAttribute : Attribute {
         public Type[] Plugins { get; }
         public TalknetPluginAssemblyAttribute(params Type[] plugins) { Plugins = plugins; }
     }
