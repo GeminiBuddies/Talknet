@@ -44,12 +44,15 @@ namespace Talknet.Plugin {
 
                     if (!Plugins.ContainsKey(reqName)) throw PluginLoadingException.ErrorReqNotSatisfied(plugin, reqName);
 
-                    if (req.Order != LoadOrderType.Any) {
-                        if (req.Order == LoadOrderType.ThisFirst) {
-                            refs.AddEdge(thisName, reqName);
-                        } else {
-                            refs.AddEdge(reqName, thisName);
-                        }
+                    switch (req.Order) {
+                    case LoadOrderType.ThisFirst:
+                        refs.AddEdge(thisName, reqName);
+                        break;
+                    case LoadOrderType.RequiredFirst:
+                        refs.AddEdge(reqName, thisName);
+                        break;
+                    default:
+                        continue;
                     }
                 }
             }
@@ -60,7 +63,7 @@ namespace Talknet.Plugin {
             } catch (NotADagException) {
                 throw new Exception();
             }
-            
+
             foreach (var it in _order) {
                 Plugins[it].PluginInstance.PluginInitialize(env);
             }

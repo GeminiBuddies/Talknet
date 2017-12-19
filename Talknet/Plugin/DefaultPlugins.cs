@@ -173,25 +173,22 @@ namespace Talknet.Plugin {
 
         public IPEndPoint ParseIpEndPointWithDns(string addr) {
             try {
-                var res = DefaultPlugin.ParseIpEndPoint(addr);
-                return res;
+                return DefaultPlugin.ParseIpEndPoint(addr);
             } catch (ArgumentException) {
-                if (_domainRegex.IsMatch(addr)) {
-                    try {
-                        var match = _domainRegex.Match(addr);
+                if (!_domainRegex.IsMatch(addr)) throw new ArgumentException();
 
-                        if (Ext.IsValidInteger(match.Groups["port"].Value, out int port) && port > 0 && port < 65536) {
-                            var domain = match.Groups["domain"].Value;
+                try {
+                    var match = _domainRegex.Match(addr);
 
-                            if (!(Dns.GetHostAddresses(domain).FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork) is IPAddress ipaddr)) throw new Exception();
-                            return new IPEndPoint(ipaddr, port);
-                        }
-                    } catch (Exception) {
+                    if (!Ext.IsValidInteger(match.Groups["port"].Value, out var port) 
+                     || port <= 0 || port >= 65536
+                     || !(Dns.GetHostAddresses(match.Groups["domain"].Value).FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork) is IPAddress ipaddr))
                         throw new ArgumentException();
-                    }
-                }
 
-                throw new ArgumentException();
+                    return new IPEndPoint(ipaddr, port);
+                } catch (Exception) {
+                    throw new ArgumentException();
+                }
             }
         }
     }

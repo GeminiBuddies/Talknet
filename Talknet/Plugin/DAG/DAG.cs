@@ -29,9 +29,9 @@ namespace Talknet.Plugin.DAG {
         }
         
         public IEnumerable<T> TopologicalOrder() {
-            int[] ind = new int[_nodeCount];
-            Queue<int> q = new Queue<int>();
-            List<T> cache = new List<T>();
+            var ind = new int[_nodeCount];
+            var q = new Queue<int>();
+            var cache = new List<T>();
                 
             foreach (var u in _map) {
                 if (u == null) continue;
