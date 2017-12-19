@@ -61,7 +61,7 @@ namespace Talknet.Plugin {
             try {
                 _order = refs.TopologicalOrder();
             } catch (NotADagException) {
-                throw new Exception();
+                throw new PluginLoadingException(ErrMsg.LoadOrderCannotBeSatisfied);
             }
 
             foreach (var it in _order) {

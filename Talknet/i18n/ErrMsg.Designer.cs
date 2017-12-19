@@ -197,6 +197,15 @@ namespace Talknet.i18n {
         }
         
         /// <summary>
+        ///   查找类似 Cannot find an order to initialize plugins. 的本地化字符串。
+        /// </summary>
+        internal static string LoadOrderCannotBeSatisfied {
+            get {
+                return ResourceManager.GetString("LoadOrderCannotBeSatisfied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 No data available. 的本地化字符串。
         /// </summary>
         internal static string NoDataAvailable {

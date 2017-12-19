@@ -163,6 +163,9 @@ Plugin assembly: {0}, plugin class: {1}.</value>
   <data name="InnerExceptionDesc" xml:space="preserve">
     <value>Inner exception: {0}: {1}</value>
   </data>
+  <data name="LoadOrderCannotBeSatisfied" xml:space="preserve">
+    <value>Cannot find an order to initialize plugins.</value>
+  </data>
   <data name="NoDataAvailable" xml:space="preserve">
     <value>No data available.</value>
   </data>
