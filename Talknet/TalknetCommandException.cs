@@ -17,6 +17,8 @@ using System;
  * Main loop show information and continue                        Main loop show information and exit
  */
 
+// TODO : remove this class, redesign the exception model
+
 namespace Talknet {
     public class TalknetCommandException : Exception {
         // deleted
