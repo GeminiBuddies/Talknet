@@ -16,10 +16,10 @@ namespace Talknet.Plugin {
         private static readonly string _ipPortPattern = @"\A(?<ip>(?<ipa>\d{1,3})\.(?<ipb>\d{1,3})\.(?<ipc>\d{1,3})\.(?<ipd>\d{1,3})):(?<port>\d{1,5})\z";
         private static readonly Regex _ipPortRegex = new Regex(_ipPortPattern);
 
-        CommandInvoker _invoker;
-        TalknetTcpClient _client;
-        Action<string> _remoteSetter;
-        Action _exiter;
+        private CommandInvoker _invoker;
+        private TalknetTcpClient _client;
+        private Action<string> _remoteSetter;
+        private Action _exiter;
 
         private bool Connected => _client?.Connected ?? false;
 
@@ -180,7 +180,7 @@ namespace Talknet.Plugin {
                 try {
                     var match = _domainRegex.Match(addr);
 
-                    if (!Ext.IsValidInteger(match.Groups["port"].Value, out var port) 
+                    if (!Ext.IsValidInteger(match.Groups["port"].Value, out var port)
                      || port <= 0 || port >= 65536
                      || !(Dns.GetHostAddresses(match.Groups["domain"].Value).FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork) is IPAddress ipaddr))
                         throw new ArgumentException();

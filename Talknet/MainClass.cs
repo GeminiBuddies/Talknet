@@ -36,11 +36,8 @@ namespace Talknet {
             _invoker = new CommandInvoker();
 #if DEBUG
             _invoker.Register("generr", () => {
-                try {
-                    throw new Exception("efi kwo semé");
-                } catch (Exception ex) {
-                    throw new TalknetCommandException("um-cyroga", ex);
-                }
+                Logger.Error("um-cyroga");
+                return 1;
             });
             _invoker.Register("genfatal", () => throw new Exception("il-pavoka"));
 #endif
@@ -121,18 +118,6 @@ namespace Talknet {
                     Logger.Error(ex.Message, MainLoopName);
                 } catch (DoNotKnowHowToParseException ex) {
                     Logger.Error(ex.Message, MainLoopName);
-                } catch (TalknetCommandException ex) {
-                    Logger.Error(string.Format(ErrMsg.CommandExceptionDesc, ex.Message), MainLoopName);
-
-                    if (ex.InnerException is Exception ine) {
-                        Logger.ErrorMultilineWithCaller(MainLoopName,
-                            string.Format(ErrMsg.InnerExceptionDesc, ine.GetType().FullName, ine.Message),
-                            ErrMsg.ExceptionStacktrace,
-                            ine.StackTrace
-                        );
-                    } else {
-                        Logger.Error(ErrMsg.NoInnerException, MainLoopName);
-                    }
                 }
             }
 

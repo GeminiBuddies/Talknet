@@ -61,7 +61,7 @@ namespace Talknet.Invoker.i18n {
         }
         
         /// <summary>
-        ///   查找类似 Parameter count for command &quot;{0}&quot; mismath. 的本地化字符串。
+        ///   查找类似 Parameter count for command &quot;{0}&quot; mismatch. 的本地化字符串。
         /// </summary>
         internal static string ArgCountExceptionDesc {
             get {

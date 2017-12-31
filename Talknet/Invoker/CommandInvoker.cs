@@ -137,22 +137,22 @@ namespace Talknet.Invoker {
             }
 
             var handler = _handlers[command];
-            if (!handler.HasParamArray && arguments.Length != handler.Parameters.Length)
+            var argumentsLength = arguments.Length;
+            var parametersLength = handler.Parameters.Length;
+            if (!handler.HasParamArray && argumentsLength != parametersLength)
                 throw new CommandArgumentCountException(inputCommand);
-            if (handler.HasParamArray && arguments.Length < handler.Parameters.Length)
+            if (handler.HasParamArray && argumentsLength < parametersLength)
                 throw new CommandArgumentCountException(inputCommand);
 
             // prepare args
             var args = new List<object>();
-            var count = handler.Parameters.Length;
-            for (var i = 0; i < count; ++i) {
+            for (var i = 0; i < parametersLength; ++i) {
                 var destType = handler.Parameters[i].ParameterType;
 
                 args.Add(doParse(getParser(destType, command), arguments[i], command, i, destType));
             }
 
             if (handler.HasParamArray) {
-                var argcount = arguments.Length;
                 var paramArrayType = handler.ParamArrayType;
                 var paramArrayListType = typeof(List<>).MakeGenericType(paramArrayType);
                 var paramArray = Activator.CreateInstance(paramArrayListType);
@@ -160,7 +160,7 @@ namespace Talknet.Invoker {
                 var paramArrayListToArray = paramArrayListType.GetMethod(ToArrayFunctionName, new Type[] { });
 
                 var parser = getParser(paramArrayType, command);
-                for (var i = count; i < argcount; ++i)
+                for (var i = parametersLength; i < argumentsLength; ++i)
                     paramArrayListAdder.Invoke(paramArray, new[] { doParse(parser, arguments[i], command, i, paramArrayType) });
 
                 args.Add(paramArrayListToArray.Invoke(paramArray, new object[] { }));
@@ -169,11 +169,8 @@ namespace Talknet.Invoker {
             try {
                 return (int) handler.Handler.DynamicInvoke(args.ToArray());
             } catch (TargetInvocationException ex) {
-                if (ex.InnerException == null) throw;
-                var ine = ex.InnerException;
-
-                if (ine is TalknetCommandException) throw ine;
-                throw new CommandExitAbnormallyException(inputCommand, ine);
+                if (ex.InnerException is Exception ine) throw new CommandExitAbnormallyException(inputCommand, ine);
+                throw;
             }
         }
 
