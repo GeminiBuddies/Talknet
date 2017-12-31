@@ -107,74 +107,11 @@ namespace Talknet.i18n {
         }
         
         /// <summary>
-        ///   查找类似 An exception occurred while trying to get the attribute of a Plugin class. 的本地化字符串。
-        /// </summary>
-        internal static string ExceptionGettingAttribute {
-            get {
-                return ResourceManager.GetString("ExceptionGettingAttribute", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Stactrace: 的本地化字符串。
         /// </summary>
         internal static string ExceptionStacktrace {
             get {
                 return ResourceManager.GetString("ExceptionStacktrace", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Exact {0} argument(s) expected. 的本地化字符串。
-        /// </summary>
-        internal static string ExpectedArgCountEq {
-            get {
-                return ResourceManager.GetString("ExpectedArgCountEq", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 At least {0} argument(s) expected. 的本地化字符串。
-        /// </summary>
-        internal static string ExpectedArgCountGe {
-            get {
-                return ResourceManager.GetString("ExpectedArgCountGe", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 More than {0} argument(s) expected. 的本地化字符串。
-        /// </summary>
-        internal static string ExpectedArgCountGt {
-            get {
-                return ResourceManager.GetString("ExpectedArgCountGt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 At most {0} argument(s) expected. 的本地化字符串。
-        /// </summary>
-        internal static string ExpectedArgCountLe {
-            get {
-                return ResourceManager.GetString("ExpectedArgCountLe", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Less than {0} argument(s) expected. 的本地化字符串。
-        /// </summary>
-        internal static string ExpectedArgCountLt {
-            get {
-                return ResourceManager.GetString("ExpectedArgCountLt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 No arguments expected. 的本地化字符串。
-        /// </summary>
-        internal static string ExpectedNoArg {
-            get {
-                return ResourceManager.GetString("ExpectedNoArg", resourceCulture);
             }
         }
         

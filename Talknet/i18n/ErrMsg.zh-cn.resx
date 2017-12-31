@@ -120,10 +120,71 @@
   <data name="AlreadyConnected" xml:space="preserve">
     <value>已经连接。</value>
   </data>
+  <data name="CommandExceptionDesc" xml:space="preserve">
+    <value>命令处理程序出现了异常：{0}</value>
+  </data>
   <data name="EmptyArg" xml:space="preserve">
     <value>参数{0}不能为空。</value>
   </data>
+  <data name="ErrorGettingPluginAttribute" xml:space="preserve">
+    <value>读取插件类的特性时出现异常。
+插件程序集：{0}，插件类：{1}。</value>
+  </data>
+  <data name="ExceptionDesc" xml:space="preserve">
+    <value>{0}：{1}</value>
+  </data>
+  <data name="ExceptionStacktrace" xml:space="preserve">
+    <value>调用栈：</value>
+  </data>
+  <data name="FatalException" xml:space="preserve">
+    <value>命令处理程序未能处理出现的异常，这是致命的。</value>
+  </data>
+  <data name="InnerExceptionDesc" xml:space="preserve">
+    <value>内部错误：{0}：{1}</value>
+  </data>
+  <data name="LoadOrderCannotBeSatisfied" xml:space="preserve">
+    <value>没有合适的初始化插件的顺序。</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>没有数据。</value>
+  </data>
+  <data name="NoInnerException" xml:space="preserve">
+    <value>没有内部错误。</value>
+  </data>
   <data name="NotConnected" xml:space="preserve">
     <value>尚未连接。</value>
+  </data>
+  <data name="PluginAssemblyNoPluginList" xml:space="preserve">
+    <value>插件程序集没有给出插件列表。
+插件程序集：{0}。</value>
+  </data>
+  <data name="PluginItemInvalidName" xml:space="preserve">
+    <value>插件的名称无效。</value>
+  </data>
+  <data name="PluginItemNoAttribute" xml:space="preserve">
+    <value>插件必须有TalknetPluginAttribute自定义特性。</value>
+  </data>
+  <data name="PluginItemNoInterface" xml:space="preserve">
+    <value>插件必须实现接口ITalknetPlugin。</value>
+  </data>
+  <data name="PluginItemNull" xml:space="preserve">
+    <value>某一项为null。</value>
+  </data>
+  <data name="PluginListInvalidItem" xml:space="preserve">
+    <value>插件程序集给出的插件列表中有无效项。
+插件程序集：{0}，无效项：{1}。
+错误信息：{2}</value>
+  </data>
+  <data name="PluginLoadingException" xml:space="preserve">
+    <value>加载插件时发生错误：{0}</value>
+  </data>
+  <data name="PluginSameName" xml:space="preserve">
+    <value>两个插件有相同的名字{0}。"{1}"和"{2}"。</value>
+  </data>
+  <data name="RequirementsCannotBeSatisfied" xml:space="preserve">
+    <value>不能满足插件依赖关系。"{0}"({1})依赖于未被找到的插件{2}。</value>
+  </data>
+  <data name="UnknownCommand" xml:space="preserve">
+    <value>未知的命令：{0}。</value>
   </data>
 </root>

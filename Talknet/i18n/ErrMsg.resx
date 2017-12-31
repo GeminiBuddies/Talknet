@@ -133,29 +133,8 @@ Plugin assembly: {0}, plugin class: {1}.</value>
   <data name="ExceptionDesc" xml:space="preserve">
     <value>{0}: {1}</value>
   </data>
-  <data name="ExceptionGettingAttribute" xml:space="preserve">
-    <value>An exception occurred while trying to get the attribute of a Plugin class.</value>
-  </data>
   <data name="ExceptionStacktrace" xml:space="preserve">
     <value>Stactrace:</value>
-  </data>
-  <data name="ExpectedArgCountEq" xml:space="preserve">
-    <value>Exact {0} argument(s) expected.</value>
-  </data>
-  <data name="ExpectedArgCountGe" xml:space="preserve">
-    <value>At least {0} argument(s) expected.</value>
-  </data>
-  <data name="ExpectedArgCountGt" xml:space="preserve">
-    <value>More than {0} argument(s) expected.</value>
-  </data>
-  <data name="ExpectedArgCountLe" xml:space="preserve">
-    <value>At most {0} argument(s) expected.</value>
-  </data>
-  <data name="ExpectedArgCountLt" xml:space="preserve">
-    <value>Less than {0} argument(s) expected.</value>
-  </data>
-  <data name="ExpectedNoArg" xml:space="preserve">
-    <value>No arguments expected.</value>
   </data>
   <data name="FatalException" xml:space="preserve">
     <value>An exception occurred and command handler failed to handle it, which is fatal.</value>
